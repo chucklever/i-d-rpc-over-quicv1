@@ -182,6 +182,7 @@ before this document is published.
  removeInRFC="false"
  toc="default">
 <name>Netids for RPC-Over-QUICv1</name>
+<t>
 Each new RPC transport is assigned one or more RPC "netid" strings.
 These strings are an rpcbind
 <xref target="RFC1833"/>
@@ -196,12 +197,14 @@ The authors request that IANA allocate
 the following "Netid" registry strings in the "ONC RPC Netid"
 registry, as defined in
 <xref target="RFC5666"/>:
+</t>
 <sourcecode name="" type="" markers="true">
 <![CDATA[
       NC_QUIC "quic"
       NC_QUIC6 "quic6"
 ]]>
 </sourcecode>
+<t>
 These netids MUST be used for any transport satisfying
 the requirements described in the current document.
 The "quic" netid is to be used when IPv4 addressing
