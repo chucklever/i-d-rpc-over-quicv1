@@ -1,0 +1,7 @@
+<note title="Discussion Venues" removeInRFC="true">
+<t>Discussion of this document takes place on the
+    Network File System Version 4 Working Group mailing list (nfsv4@ietf.org),
+    which is archived at <eref target="https://mailarchive.ietf.org/arch/browse/nfsv4/"/>.</t>
+<t>Source for this draft and an issue tracker can be found at
+    <eref target="https://github.com/chucklever/i-d-rpc-over-quicv1"/>.</t>
+</note>
