@@ -98,7 +98,24 @@ Instructions are on that page.
  toc="default">
 <name>Introduction</name>
 <t>
+This RFC explains how to layer RPC protocols, including especially NFS, on top
+of QUIC version 1.
 </t>
+<aside>
+<t>
+Explain motivations:
+</t>
+<ul>
+<li>TLS</li>
+<li>Multiple streams--though applications are speculative at this point.
+  (Maybe they will allow more sophisticated prioritization of traffic
+  without the overhead of multiple TCP connections?)</li>
+<li>Lower-latency connection setup--though NFS connections are typically
+  long-lived.</li>
+<li>Likely SMB adoption of QUIC should make QUIC implementations widely
+  available.</li>
+</ul>
+</aside>
 </section>
 
 <section
