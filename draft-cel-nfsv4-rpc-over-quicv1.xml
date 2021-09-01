@@ -26,7 +26,7 @@ Remote Procedure Call Over QUIC Version 1
 
 <seriesInfo name="Internet-Draft" value="draft-cel-nfsv4-rpc-over-quicv1-latest"/>
 
-<author initials="B." surname="Fields" fullname="J. Bruce Fields">
+<author initials="J. B." surname="Fields" fullname="J. Bruce Fields">
 <organization abbrev="Red Hat" showOnFrontPage="true">
 Red Hat
 </organization>
