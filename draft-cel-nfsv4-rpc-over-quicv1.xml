@@ -260,36 +260,43 @@ to other RDMA-enabled protocols (such as RPC-over-RDMA).
 </section>
 
 <section>
-<name>QUIC Connections and Streams</name>
+<name>Connections and Streams</name>
 <t>
-QUIC supports multiple streams of data per connection.
+QUIC provides a "stream" abstraction, described in
+<xref target="RFC9000" section="2" format="default" sectionFormat="of"/>.
+Each QUIC stream can be unidirectional or bidirectional.
+QUIC supports a nearly arbitrary number of concurrent streams per connection.
 </t>
 <t>
-When upper-layer protocol specifications refer to a "connection", this should
-be understood to apply to a QUIC connection, not to a single stream.  For
-example, in the case of NFSv4.1 <xref target="RFC8881"/>, a BIND_CONN_TO_SESSION
-operation binds the entire connection and does not need to be repeated for
-each stream.
+Unless explicitly specified,
+when RPC protocol specifications refer to a "connection",
+this applies to a QUIC connection, not to a stream.
+As an example, in the case of NFSv4.1
+<xref target="RFC8881" format="default" sectionFormat="of"/>,
+a BIND_CONN_TO_SESSION
+operation binds a QUIC connection and does not need to be repeated for each stream
+on the connection.
 </t>
 <t>
-An RPC reply MUST be sent over the same connection and stream as the call
-it replies to.
-</t>
-<t>
-In protocols such as NFSv4.1 <xref target="RFC8881"/> that support bidrectional
-RPCs, forechannel RPCs MUST be sent over a client-initiated bidirectional
-stream and backchannel RPCs MUST be sent over a server-initiated bidirectional
-stream.
-</t>
-<t>
-Otherwise, unless the protocol specifies otherwise, RPC callers are free
-to use streams as they wish, and responders are required to allow callers
-to do so.
+An RPC Reply
+<bcp14>MUST</bcp14>
+be sent over the same connection and stream as the Call message with a matching XID.
+Forward-direction RPC messages
+<bcp14>MUST</bcp14>
+be sent over a client-initiated bidirectional stream (stream type 0x00).
+Reverse-direction RPC messages
+<bcp14>MUST</bcp14>
+be sent over a server-initiated bidirectional stream (stream type 0x01).
+Otherwise, unless otherwise explicitly specified,
+RPC callers are free to use streams as they wish,
+and responders have to accommodate callers that do so.
 </t>
 <aside>
-<t>NFS requirement on resends: QUIC allows reconnecting using the same
+<t>
+NFS requirement on resends: QUIC allows reconnecting using the same
 connection ID, so isn't breaking/reconnection somewhat ambiguous?  When
 can a server drop or a client resend?
+Any advice needed for server-side DRC implementations?
 </t>
 </aside>
 
