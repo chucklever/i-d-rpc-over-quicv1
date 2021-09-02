@@ -280,7 +280,7 @@ among other things.
 The authors request that IANA allocate
 the following "Netid" registry strings in the "ONC RPC Netid"
 registry, as defined in
-<xref target="RFC5666"/>:
+<xref target="RFC5665"/>:
 </t>
 <sourcecode name="" type="" markers="true">
 <![CDATA[
@@ -289,7 +289,9 @@ registry, as defined in
 ]]>
 </sourcecode>
 <t>
-These netids MUST be used for any transport satisfying
+These netids
+<bcp14>MUST</bcp14>
+be used for any transport satisfying
 the requirements described in the current document.
 The "quic" netid is to be used when IPv4 addressing
 is employed by the underlying transport,
@@ -319,7 +321,7 @@ as the reference for the new entries.
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
- href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5666.xml"/>
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5665.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
