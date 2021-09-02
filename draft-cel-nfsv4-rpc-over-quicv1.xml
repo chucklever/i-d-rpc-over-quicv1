@@ -321,6 +321,9 @@ as the reference for the new entries.
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5531.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5665.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -332,8 +335,6 @@ as the reference for the new entries.
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-nfsv4-rpc-tls-11.xml"/>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
- href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5531.xml"/>
 </references>
 
 <references>
