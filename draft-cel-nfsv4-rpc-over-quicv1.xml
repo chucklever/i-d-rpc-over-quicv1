@@ -182,14 +182,44 @@ The authors assume readers are already familiar with ONC RPC as specified in
 <xref target="RFC5531" format="default" sectionFormat="of"/>.
 </t>
 
-<section>
-<name>TLS</name>
-
+<section
+ anchor="section_C5EA70E3-77FB-44B4-A115-45D646155E8D"
+ numbered="true"
+ removeInRFC="false"
+ toc="default">
+<name>Transport Layer Security</name>
 <t>
-TLS is a mandatory component of QUIC.  All of
-<xref target="I-D.ietf-nfsv4-rpc-tls"/> applies to RPC over QUIC as well, with
-the exception of the STARTTLS mechanism described in section 4.1.
+When establishing a connection with an unfamiliar peer,
+the QUICv1 protocol utilizes the TLS v1.3 handshake protocol.
+The details of QUIC's use of TLS are specified in
+<xref target="RFC9001" format="default" sectionFormat="of"/>.
 </t>
+<t>
+As such, RPC-over-QUIC inherits many of the requirements of
+<xref target="I-D.ietf-nfsv4-rpc-tls" format="default" sectionFormat="of"/>.
+In particular:
+</t>
+<ul>
+<li>
+With QUICv1, security at the transport layer is always enabled.
+Thus there is no need or use for the
+STARTTLS mechanism described in Section 4 of that document.
+In addition, the discussion about the opportunistic use of
+TLS does not apply to RPC-over-QUIC.
+</li>
+<li>
+The peer authentication requirements in Section 5.2 of that document
+also apply to RPC-over-QUIC.
+</li>
+<li>
+The PKIX Extended Key Usage values defined in that document
+are also valid for use with RPC-over-QUIC.
+</li>
+<li>
+The ALPN defined in Section 8.2 of that document is also used
+for RPC-over-QUIC.
+</li>
+</ul>
 
 </section>
 
@@ -289,7 +319,11 @@ as it is described in the current document.
  toc="default">
 <name>Security Considerations</name>
 <t>
+The authors commend readers to the
+discussion of QUIC's transport layer security that appears in
+<xref target="RFC9000" section="21" format="default" sectionFormat="of"/>.
 </t>
+
 </section>
 
 <section
@@ -379,6 +413,9 @@ as the reference for the new entries.
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9000.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9001.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-nfsv4-rpc-tls-11.xml"/>
