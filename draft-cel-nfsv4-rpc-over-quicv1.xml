@@ -223,16 +223,23 @@ for RPC-over-QUIC.
 
 </section>
 
-<section>
-<name>Formatting of RPC messages over QUIC</name>
+<section
+ anchor="section_53BDDC66-A69A-4E32-A0D8-5DF38ABD64B2"
+ numbered="true"
+ removeInRFC="false"
+ toc="default">
+<name>RPC Message Framing</name>
 <t>
-Record marking is exactly as in TCP; see
-<xref target="RFC5531" section="11"/>.
+Record marking on QUIC is exactly as in TCP.
+See
+<xref target="RFC5531" section="11" format="default" sectionFormat="of"/>.
 </t>
-
 <aside>
 <t>
-Discussion: This is the simplest thing to do.  Open question whether we
+Discussion: This is the simplest thing to do.
+</t>
+<t>
+[bfields] Open question whether we
 should do something more complicated that adds RDMA-like features or at
 least provides some minimal help with data alignment.  Possibilities might
 include a single additional integer giving the offset of a payload, serving
@@ -240,7 +247,16 @@ only as a hint; or reference additional streams in the same connection for
 payloads; or even looking into full RDMA--long-term there may be interest in
 supporting RDMA over QUIC, and we may be able to piggyback on that effort.
 </t>
+<t>
+[cel] Direct data placement over TCP can already be accomplished today using
+MPA/DDP protocols (formerly known as iWARP). Using a software iWARP
+implementation means no special hardware is necessary. Likewise, if MPA/DDP
+can be made to support QUIC, much of the need for a separate RPC-over-QUIC
+is moot. In addition, it would bring automatically transport layer security
+to other RDMA-enabled protocols (such as RPC-over-RDMA).
+</t>
 </aside>
+
 </section>
 
 <section>
