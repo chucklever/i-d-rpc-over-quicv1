@@ -98,8 +98,29 @@ Instructions are on that page.
  toc="default">
 <name>Introduction</name>
 <t>
-This RFC explains how to layer RPC protocols, including especially NFS, on top
-of QUIC version 1.
+QUIC is a new reliable connection-oriented network transport protocol
+that is designed to be general-purpose and secure
+<xref target="RFC9000" format="default" sectionFormat="of"/>.
+It's features include
+integrated transport layer security,
+multiple streams over each connection,
+fast reconnect,
+and
+robust recovery from frame loss and network congestion.
+</t>
+<t>
+Open Network Computing Remote Procedure Call
+(often shortened to "RPC")
+is a Remote Procedure Call protocol
+that runs over a variety of network transports
+<xref target="RFC5531" format="default" sectionFormat="of"/>.
+RPC implementations today use UDP
+<xref target="RFC0768" format="default" sectionFormat="of"/>
+or
+TCP
+<xref target="RFC0793" format="default" sectionFormat="of"/>.
+The current document
+specifies how to convey RPC on a QUIC version 1 transport.
 </t>
 <aside>
 <t>
@@ -115,7 +136,14 @@ Explain motivations:
 <li>Likely SMB adoption of QUIC should make QUIC implementations widely
   available.</li>
 </ul>
+<t>
+In addition, this section needs to document and demonstrate
+specific use cases that cannot be addressed using existing RPC transports
+and security mechanisms such as RPC-over-TCP, RPC-with-TLS,
+or RPC-over-RDMA.
+</t>
 </aside>
+
 </section>
 
 <section
@@ -333,6 +361,9 @@ as the reference for the new entries.
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9000.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-nfsv4-rpc-tls-11.xml"/>
 
 </references>
@@ -340,7 +371,14 @@ as the reference for the new entries.
 <references>
 <name>Informative References</name>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.0768.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.0793.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8881.xml"/>
 
 </references>
