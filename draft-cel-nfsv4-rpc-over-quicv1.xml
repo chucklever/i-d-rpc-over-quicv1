@@ -168,6 +168,20 @@ when, and only when, they appear in all capitals, as shown here.
 
 </section>
 
+<section
+ anchor="section_9B9CBB2A-5A2B-4355-92E7-6B9C2DFCE9C3"
+ numbered="true"
+ removeInRFC="false"
+ toc="default">
+<name>RPC-over-QUIC Framework</name>
+<t>
+RPC is first and foremost a message-passing protocol.
+This section of the document covers
+the operational details of exchanging RPC messages on a QUICv1 transport.
+The authors assume readers are already familiar with ONC RPC as specified in
+<xref target="RFC5531" format="default" sectionFormat="of"/>.
+</t>
+
 <section>
 <name>TLS</name>
 
@@ -232,6 +246,9 @@ connection ID, so isn't breaking/reconnection somewhat ambiguous?  When
 can a server drop or a client resend?
 </t>
 </aside>
+
+</section>
+
 </section>
 
 <section
