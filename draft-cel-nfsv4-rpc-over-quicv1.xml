@@ -21,7 +21,7 @@
 <front>
 
 <title abbrev="RPC Over QUICv1">
-Remote Procedure Call Over QUIC Version 1
+Remote Procedure Call over QUIC Version 1
 </title>
 
 <seriesInfo name="Internet-Draft" value="draft-cel-nfsv4-rpc-over-quicv1-latest"/>
@@ -98,29 +98,30 @@ Instructions are on that page.
  toc="default">
 <name>Introduction</name>
 <t>
-QUIC is a new reliable connection-oriented network transport protocol
+QUIC is a reliable connection-oriented network transport protocol
 that is designed to be general-purpose and secure
-<xref target="RFC9000" format="default" sectionFormat="of"/>.
-It's features include
+<xref target="RFC9000"/>.
+Its features include
 integrated transport layer security,
 multiple streams over each connection,
 fast reconnect,
 and
-robust recovery from frame loss and network congestion.
+robust recovery from packet loss and network congestion.
 </t>
 <t>
 Open Network Computing Remote Procedure Call
 (often shortened to "RPC")
 is a Remote Procedure Call protocol
 that runs over a variety of network transports
-<xref target="RFC5531" format="default" sectionFormat="of"/>.
+<xref target="RFC5531"/>.
 RPC implementations today use UDP
-<xref target="RFC0768" format="default" sectionFormat="of"/>
-or
-TCP
-<xref target="RFC0793" format="default" sectionFormat="of"/>.
-The current document
-specifies how to convey RPC on a QUIC version 1 transport.
+<xref target="RFC0768"/>
+or TCP
+<xref target="RFC0793"/>.
+This document
+specifies how to convey RPC over QUIC version 1
+<xref target="RFC9000"/>, simply referred to as "QUIC" in the remainder
+of this document.
 </t>
 <aside>
 <t>
@@ -161,8 +162,8 @@ The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>",
 "<bcp14>MAY</bcp14>", and "<bcp14>OPTIONAL</bcp14>"
 in this document are to be interpreted
 as described in BCP&nbsp;14
-<xref target="RFC2119" format="default" sectionFormat="of"/>
-<xref target="RFC8174" format="default" sectionFormat="of"/>
+<xref target="RFC2119"/>
+<xref target="RFC8174"/>
 when, and only when, they appear in all capitals, as shown here.
 </t>
 
@@ -177,9 +178,9 @@ when, and only when, they appear in all capitals, as shown here.
 <t>
 RPC is first and foremost a message-passing protocol.
 This section of the document covers
-the operational details of exchanging RPC messages on a QUICv1 transport.
-The authors assume readers are already familiar with ONC RPC as specified in
-<xref target="RFC5531" format="default" sectionFormat="of"/>.
+the implementation details of exchanging RPC messages over QUIC.
+The content in this document assumes readers are already familiar with ONC RPC as specified in
+<xref target="RFC5531"/>.
 </t>
 
 <section
@@ -189,35 +190,38 @@ The authors assume readers are already familiar with ONC RPC as specified in
  toc="default">
 <name>Transport Layer Security</name>
 <t>
-When establishing a connection with an unfamiliar peer,
-the QUICv1 protocol utilizes the TLS v1.3 handshake protocol.
-The details of QUIC's use of TLS are specified in
-<xref target="RFC9001" format="default" sectionFormat="of"/>.
-</t>
-<t>
-As such, RPC-over-QUIC inherits many of the requirements of
-<xref target="I-D.ietf-nfsv4-rpc-tls" format="default" sectionFormat="of"/>.
+QUIC uses the Transport Layer Security (TLS) protocol
+to secure QUIC
+<xref target="RFC9001"/>.
+As such, RPC-over-QUIC inherently fulfills many of the requirements of
+<xref target="I-D.ietf-nfsv4-rpc-tls"/>.
 In particular:
 </t>
 <ul>
 <li>
-With QUICv1, security at the transport layer is always enabled.
-Thus there is no need or use for the
-STARTTLS mechanism described in Section 4 of that document.
-In addition, the discussion about the opportunistic use of
+With QUIC, security at the transport layer is always enabled.
+Thus, there is no need or use for the
+STARTTLS mechanism described in Section 4 of
+<xref target="I-D.ietf-nfsv4-rpc-tls"/>.
+</li>
+<li>
+The discussion about the opportunistic use of
 TLS does not apply to RPC-over-QUIC.
 </li>
 <li>
-The peer authentication requirements in Section 5.2 of that document
-also apply to RPC-over-QUIC.
+The peer authentication requirements in Section 5.2 of
+<xref target="I-D.ietf-nfsv4-rpc-tls"/>
+do apply to RPC-over-QUIC.
 </li>
 <li>
-The PKIX Extended Key Usage values defined in that document
+The PKIX Extended Key Usage values defined in
+<xref target="I-D.ietf-nfsv4-rpc-tls"/>
 are also valid for use with RPC-over-QUIC.
 </li>
 <li>
-The ALPN defined in Section 8.2 of that document is also used
-for RPC-over-QUIC.
+The ALPN defined in Section 8.2 of
+<xref target="I-D.ietf-nfsv4-rpc-tls"/>
+is also used for RPC-over-QUIC.
 </li>
 </ul>
 
@@ -232,7 +236,7 @@ for RPC-over-QUIC.
 <t>
 Record marking on QUIC is exactly as in TCP.
 See
-<xref target="RFC5531" section="11" format="default" sectionFormat="of"/>.
+<xref target="RFC5531" section="11"/>.
 </t>
 <aside>
 <t>
@@ -255,6 +259,11 @@ can be made to support QUIC, much of the need for a separate RPC-over-QUIC
 is moot. In addition, it would bring automatically transport layer security
 to other RDMA-enabled protocols (such as RPC-over-RDMA).
 </t>
+<t>
+[lars] If changes to the RPC-over-QUIC binding might be desired in the future,
+how would they be negotiated/expressed? Should a versioned ALPN be used instead
+of the one from <xref target="I-D.ietf-nfsv4-rpc-tls"/>?
+</t>
 </aside>
 
 </section>
@@ -263,16 +272,16 @@ to other RDMA-enabled protocols (such as RPC-over-RDMA).
 <name>Connections and Streams</name>
 <t>
 QUIC provides a "stream" abstraction, described in
-<xref target="RFC9000" section="2" format="default" sectionFormat="of"/>.
+<xref target="RFC9000" section="2"/>.
 Each QUIC stream can be unidirectional or bidirectional.
-QUIC supports a nearly arbitrary number of concurrent streams per connection.
+QUIC supports a nearly unlimited number of concurrent streams per connection.
 </t>
 <t>
 Unless explicitly specified,
 when RPC protocol specifications refer to a "connection",
 this applies to a QUIC connection, not to a stream.
 As an example, in the case of NFSv4.1
-<xref target="RFC8881" format="default" sectionFormat="of"/>,
+<xref target="RFC8881"/>,
 a BIND_CONN_TO_SESSION
 operation binds a QUIC connection and does not need to be repeated for each stream
 on the connection.
@@ -298,6 +307,16 @@ connection ID, so isn't breaking/reconnection somewhat ambiguous?  When
 can a server drop or a client resend?
 Any advice needed for server-side DRC implementations?
 </t>
+<t>
+[lars] I'm not sure I understand what is meant by "reconnecting" above.
+Is this referring to connection migration?
+Or a 0-RTT repeated connection instance? Something else?
+</t>
+<t>
+[lars] Also, I'm not sure if the use of streams is fully specified by the above.
+Is the intent here to leave it to callers to decide if they want to use a fresh
+stream for each RPC, or reuse an existing stream for a series of RPCs?
+</t>
 </aside>
 
 </section>
@@ -314,7 +333,7 @@ Any advice needed for server-side DRC implementations?
 This section records the status of known implementations of the
 protocol defined by this specification at the time of posting of
 this Internet-Draft, and is based on a proposal described in
-<xref target="RFC7942" format="default" sectionFormat="of"/>.
+<xref target="RFC7942"/>.
 The description of implementations in this section is
 intended to assist the IETF in its decision processes in
 progressing drafts to RFCs.
@@ -329,8 +348,8 @@ catalog of available implementations or their features.
 Readers are advised to note that other implementations may exist.
 </t>
 <t>
-There are no known implementations of RPC-over-QUICv1
-as it is described in the current document.
+There are no known implementations of RPC-over-QUIC
+as described in the current document.
 </t>
 
 </section>
@@ -344,7 +363,7 @@ as it is described in the current document.
 <t>
 The authors commend readers to the
 discussion of QUIC's transport layer security that appears in
-<xref target="RFC9000" section="21" format="default" sectionFormat="of"/>.
+<xref target="RFC9000" section="21"/>.
 </t>
 
 </section>
@@ -379,17 +398,15 @@ the format of service addresses and ports,
 among other things.
 </t>
 <t>
-The authors request that IANA allocate
+This document requests that IANA allocate
 the following "Netid" registry strings in the "ONC RPC Netid"
 registry, as defined in
 <xref target="RFC5665"/>:
 </t>
-<sourcecode name="" type="" markers="true">
-<![CDATA[
+<artwork><![CDATA[
       NC_QUIC "quic"
       NC_QUIC6 "quic6"
-]]>
-</sourcecode>
+]]></artwork>
 <t>
 These netids
 <bcp14>MUST</bcp14>
@@ -401,6 +418,12 @@ and "quic6" for IPv6 addressing.
 IANA should use the current document (RFC-TBD)
 as the reference for the new entries.
 </t>
+<aside>
+<t>
+[lars] Why one per IP address family? This seems common practice with netids,
+but also seems to be a layering violation?
+</t>
+</aside>
 </section>
 
 </section>
@@ -429,9 +452,6 @@ as the reference for the new entries.
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5665.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
- href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
-<xi:include
- xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -454,6 +474,9 @@ as the reference for the new entries.
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.0793.xml"/>
+<xi:include
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
 <xi:include
  xmlns:xi="http://www.w3.org/2001/XInclude"
  href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8881.xml"/>
