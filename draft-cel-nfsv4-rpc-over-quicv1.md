@@ -73,9 +73,9 @@ from packet loss and network congestion.
 
 Open Network Computing Remote Procedure Call (often shortened
 to "RPC") is a Remote Procedure Call protocol that runs over a
-variety of network transports {{RFC5531}}. RPC implementations today
+variety of network transports {{RFC5531}}. RPC implementations so far
 use UDP {{RFC0768}} or TCP {{RFC0793}}. This document specifies
-how to transport RPC over QUIC version.
+how to transport RPC over QUIC version 1.
 
 {:aside}
 >Explain motivations:
@@ -201,7 +201,7 @@ features. Readers are advised to note that other implementations may
 exist.
 
 There are no known implementations of RPC-over-QUICv1 as
-described in the current document.
+described in this document.
 
 # Security Considerations
 
@@ -231,10 +231,10 @@ registry, as defined in {{RFC5665}}:
 ~~~
 
 These netids MUST be used for any transport satisfying the
-requirements described in the current document. The "quic" netid is
+requirements described in this document. The "quic" netid is
 to be used when IPv4 addressing is employed by the underlying
-transport, and "quic6" for IPv6 addressing. IANA should use the
-current document (RFC-TBD) as the reference for the new entries.
+transport, and "quic6" for IPv6 addressing. IANA should use this
+document (RFC-TBD) as the reference for the new entries.
 
 --- back
 
