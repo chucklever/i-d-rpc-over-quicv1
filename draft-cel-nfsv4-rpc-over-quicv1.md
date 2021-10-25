@@ -75,7 +75,7 @@ Open Network Computing Remote Procedure Call (often shortened
 to "RPC") is a Remote Procedure Call protocol that runs over a
 variety of network transports {{RFC5531}}. RPC implementations so far
 use UDP {{RFC0768}} or TCP {{RFC0793}}. This document specifies
-how to transport RPC over QUIC version 1.
+how to transport RPC messages over QUIC version 1.
 
 {:aside}
 >Explain motivations:
@@ -106,10 +106,12 @@ QUICv1. Readers should already be familiar with ONC RPC {{RFC5531}}.
 
 ## Transport Layer Security
 
-QUICv1 uses utilizes the Transport Layer Security (TLS). The details
-of QUIC's use of TLS are specified in {{RFC9001}}. Hence,
-RPC-over-QUIC inherently fulfills many of the requirements of
-{{I-D.ietf-nfsv4-rpc-tls}}. In particular:
+RPC-over-QUIC provides peer authentication and encryption services
+using a framework based on Transport Layer Security (TLS).
+Ergo, RPC-over-QUIC inherently fulfills many of the requirements of
+{{I-D.ietf-nfsv4-rpc-tls}}.
+The details of QUIC's use of TLS are specified in {{RFC9001}}.
+In particular:
 
 - With QUICv1, security at the transport layer is always enabled.
   Thus, there is no need or use for the STARTTLS mechanism described
