@@ -32,13 +32,13 @@ normative:
   RFC1833:
   RFC5531:
   RFC5665:
-  RFC7942:
   RFC9000:
   RFC9001:
 
 informative:
   RFC0768:
   RFC0793:
+  RFC7942:
   RFC8881:
 
 --- abstract
