@@ -1,7 +1,7 @@
 ---
 
 title: Remote Procedure Call over QUIC Version 1
-abbrev: RPC over QUICv1
+abbrev: RPC over QUIC
 docname: draft-cel-nfsv4-rpc-over-quicv1-latest
 category: std
 ipr: trust200902
@@ -228,7 +228,7 @@ RFC Editor: In the following subsections, please replace RFC-TBD with
 the RFC number assigned to this document. Furthermore, please remove
 this Editor's Note before this document is published.
 
-## Netids for RPC-Over-QUICv1
+## Netids for RPC-over-QUIC
 
 Each new RPC transport is assigned one or more RPC "netid" strings.
 These strings are an rpcbind {{RFC1833}} string naming the underlying
