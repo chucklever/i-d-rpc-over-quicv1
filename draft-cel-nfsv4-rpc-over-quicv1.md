@@ -152,6 +152,11 @@ See {{Section 11 of RFC5531}}.
  the need for a separate RPC-over-QUIC is moot. In addition, it would
  bring automatically transport layer security to other RDMA-enabled
  protocols (such as RPC-over-RDMA).
+>
+> lars: If changes to the RPC-over-QUIC binding might be desired in
+  the future, how would they be negotiated/expressed? Should a
+  versioned ALPN be used instead of the one from
+  {{I-D.ietf-nfsv4-rpc-tls}}?
 
 ## Connections and Streams
 
@@ -180,6 +185,15 @@ do so.
  connection ID, so isn't breaking/reconnection somewhat ambiguous?
  When can a server drop or a client resend? Any advice needed for
  server-side DRC implementations?
+>
+> lars: I'm not sure I understand what is meant by "reconnecting"
+  above. Is this referring to connection migration? Or a 0-RTT
+  repeated connection instance? Something else?
+>
+> lars: Also, I'm not sure if the use of streams is fully specified by
+  the above. Is the intent here to leave it to callers to decide if
+  they want to use a fresh stream for each RPC, or reuse an existing
+  stream for a series of RPCs?
 
 # Implementation Status
 
@@ -235,6 +249,10 @@ requirements described in the current document. The "quic" netid is
 to be used when IPv4 addressing is employed by the underlying
 transport, and "quic6" for IPv6 addressing. IANA should use the
 current document (RFC-TBD) as the reference for the new entries.
+
+{:aside}
+> lars: Why one per IP address family? This seems common practice with
+  netids, but also seems to be a layering violation?
 
 --- back
 
