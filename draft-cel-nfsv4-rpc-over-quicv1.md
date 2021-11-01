@@ -96,7 +96,7 @@ RPC-over-RDMA.
 
 # Requirements Language
 
-{::boilerplate bcp14}
+{::boilerplate bcp14-tagged}
 
 # RPC-over-QUIC Framework
 
