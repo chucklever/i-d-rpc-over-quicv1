@@ -15,6 +15,16 @@ pi: [toc, sortrefs, symrefs, docmapping]
 author:
 
 -
+  name: Benjamin Coddington
+  org: Red Hat
+  country: United States of America
+  email: bcodding@redhat.com
+-
+  name: Scott Mayhew
+  org: Red Hat
+  country: United States of America
+  email: smayhew@redhat.com
+-
   name: Charles Lever
   role: editor
   org: Oracle Corporation
