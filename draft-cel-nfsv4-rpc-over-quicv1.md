@@ -15,11 +15,6 @@ pi: [toc, sortrefs, symrefs, docmapping]
 author:
 
 -
-  name: J. Bruce Fields
-  org: Red Hat
-  country: United States of America
-  email: bfields@redhat.com
--
   name: Charles Lever
   role: editor
   org: Oracle Corporation
@@ -260,6 +255,12 @@ document (RFC-TBD) as the reference for the new entries.
 
 # Acknowledgments
 {: numbered="no"}
+
+The authors express their deepest appreciation for the
+contributions of J. Bruce Fields who was an original author
+of this document.
+In addition, we are indebted to Lars Eggert and the QUIC
+working group for the creation of the QUIC transport protocol.
 
 The editor is grateful to Bill Baker, Greg Marsden, and Martin Thomson
 for their input and support.
