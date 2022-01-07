@@ -1,0 +1,265 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2022-01-02T00:56:23.562463+00:00",
+  "repo": "chucklever/i-d-rpc-over-quicv1",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOF4Efbc4tfQ3d",
+      "title": "A few suggestions/comments",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/1",
+      "state": "CLOSED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-21T11:24:17Z",
+      "updatedAt": "2021-10-25T09:15:11Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "87cae00641b8638c7c1b627ce3b333f47f7102aa",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "lars-suggestions",
+      "headRefOid": "7b72ad5c2ae2b04b172bc18d70ca980d4f38a0fd",
+      "closedAt": "2021-10-22T14:34:55Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "larseggert",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I can do that. Before I do, one question: Would you care if I also converted the document to Markdown? I find editing in XML really cumbersome.",
+          "createdAt": "2021-10-22T07:01:39Z",
+          "updatedAt": "2021-10-22T07:01:39Z"
+        },
+        {
+          "author": "chucklever",
+          "authorAssociation": "OWNER",
+          "body": "I've pulled the markdown conversion commit. I suppose this PR should be deleted since .xml no longer exists.\r\n\r\nFeel free to include a commit to add yourself as co-author or credit yourself in the Acknowledgements section, as you prefer.",
+          "createdAt": "2021-10-22T14:33:09Z",
+          "updatedAt": "2021-10-22T14:33:09Z"
+        },
+        {
+          "author": "larseggert",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Will do, next week",
+          "createdAt": "2021-10-22T15:52:42Z",
+          "updatedAt": "2021-10-22T15:52:42Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOF4Efbc4u18Dn",
+          "commit": {
+            "abbreviatedOid": "7b72ad5"
+          },
+          "author": "chucklever",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "Thanks for your review and the PR!\r\n\r\nI'd like to document the purpose for several of these changes in the document's commit history, and also request some changes to particular edits. Please split this commit into several smaller ones:\r\n- One that moves the Reference for RFC7942, with a rationale in the patch description\r\n- One that removes format=\"default\" sectionFormat=\"of\" from <xref> tags, with rationale\r\n- One that changes the term \"QUICv1\" to \"QUIC\", with rationale\r\n- One that changes the introduction to the Transport Layer Security section, with rationale\r\n- One that applies the wordsmithing changes (rationale obvious)\r\n- One that adds your asides and questions\r\n\r\nIf there's a friendly way via the GitHub BUI for me to split up this one commit to save you the effort, let me know how to do that, and give me rough suggestions for the rationale for each.",
+          "createdAt": "2021-10-21T15:51:17Z",
+          "updatedAt": "2021-10-21T15:51:17Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOF4Efbc4tiaKu",
+      "title": "Convert to Markdown",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/2",
+      "state": "MERGED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "So you have an idea what the conversion would look like. I made no other changes to the content.",
+      "createdAt": "2021-10-22T08:53:47Z",
+      "updatedAt": "2021-10-22T15:52:22Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "87cae00641b8638c7c1b627ce3b333f47f7102aa",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "markdown",
+      "headRefOid": "2742dd56d918e1cba6d737e13c08869bd38057f1",
+      "closedAt": "2021-10-22T14:25:59Z",
+      "mergedAt": "2021-10-22T14:25:59Z",
+      "mergedBy": "chucklever",
+      "mergeCommit": {
+        "oid": "c8ff56c4bf69582c90587b6ee098e14e909d862e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOF4Efbc4tnFnp",
+      "title": "Move RFC7942 to an informative reference.",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/3",
+      "state": "MERGED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The way it's referred to in the text doesn't seem to require a normative\r\nreference.",
+      "createdAt": "2021-10-25T08:38:38Z",
+      "updatedAt": "2021-10-25T13:37:57Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "c8ff56c4bf69582c90587b6ee098e14e909d862e",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "7942-to-info",
+      "headRefOid": "0c727c5b6f27d5e7c32429da23ebdb15d66a7f3d",
+      "closedAt": "2021-10-25T12:58:54Z",
+      "mergedAt": "2021-10-25T12:58:54Z",
+      "mergedBy": "chucklever",
+      "mergeCommit": {
+        "oid": "f9d9f50c73fe6e785ad514ceaecf0ee145c8d5db"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOF4Efbc4tnIV9",
+      "title": "Add some comments as asides",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/4",
+      "state": "MERGED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-25T08:52:57Z",
+      "updatedAt": "2021-10-25T13:37:48Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "c8ff56c4bf69582c90587b6ee098e14e909d862e",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "asides",
+      "headRefOid": "b3c9e3faa3955066f6cf57398ad6e5b8278a5d14",
+      "closedAt": "2021-10-25T13:13:15Z",
+      "mergedAt": "2021-10-25T13:13:15Z",
+      "mergedBy": "chucklever",
+      "mergeCommit": {
+        "oid": "7deeed69cacf3216d4d4467e47e1eec33599b671"
+      },
+      "comments": [
+        {
+          "author": "chucklever",
+          "authorAssociation": "OWNER",
+          "body": "[Editorial] Additional questions and comments from Lars E.",
+          "createdAt": "2021-10-25T13:11:07Z",
+          "updatedAt": "2021-10-25T13:11:07Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOF4Efbc4tnNR6",
+      "title": "Misc suggestions",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/5",
+      "state": "MERGED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-25T09:14:27Z",
+      "updatedAt": "2021-10-25T13:37:37Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "c8ff56c4bf69582c90587b6ee098e14e909d862e",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "misc-suggestions",
+      "headRefOid": "ab9cec303c9d17211c84a64a61bbebfca37ca17a",
+      "closedAt": "2021-10-25T13:15:12Z",
+      "mergedAt": "2021-10-25T13:15:12Z",
+      "mergedBy": "chucklever",
+      "mergeCommit": {
+        "oid": "5610e462619dd9c5c5d0dcf717b1f071eadf3712"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOF4Efbc4t6rMx",
+      "title": "Tag BCP14 terms.",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/pull/6",
+      "state": "MERGED",
+      "author": "larseggert",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This restores the \\<bcp14\\> tags you had in the XML version.",
+      "createdAt": "2021-11-01T09:44:46Z",
+      "updatedAt": "2021-11-01T14:16:00Z",
+      "baseRepository": "chucklever/i-d-rpc-over-quicv1",
+      "baseRefName": "main",
+      "baseRefOid": "41d19bb8b44f23c498bcf0dea093fecc1e205ac0",
+      "headRepository": "larseggert/i-d-rpc-over-quicv1",
+      "headRefName": "tag-terms",
+      "headRefOid": "e8db7025966d8f3b52ca930283278f64ffd3482d",
+      "closedAt": "2021-11-01T14:15:12Z",
+      "mergedAt": "2021-11-01T14:15:12Z",
+      "mergedBy": "chucklever",
+      "mergeCommit": {
+        "oid": "72ae7572526c9af66c97762b52480976e0c5c64b"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
