@@ -10,6 +10,7 @@ workgroup: Network File System Version 4
 obsoletes:
 updates:
 stand_alone: yes
+submissiontype: IETF
 pi: [toc, sortrefs, symrefs, docmapping]
 
 author:
