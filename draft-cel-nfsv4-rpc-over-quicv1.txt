@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                                 S. Mayhew
 Intended status: Standards Track                                 Red Hat
-Expires: 11 July 2022                                      C. Lever, Ed.
+Expires: 6 January 2023                                    C. Lever, Ed.
                                                                   Oracle
-                                                          7 January 2022
+                                                             5 July 2022
 
 
                Remote Procedure Call over QUIC Version 1
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 July 2022.
+   This Internet-Draft will expire on 6 January 2023.
 
 Copyright Notice
 
@@ -359,19 +359,16 @@ Authors' Addresses
    Benjamin Coddington
    Red Hat
    United States of America
-
    Email: bcodding@redhat.com
 
 
    Scott Mayhew
    Red Hat
    United States of America
-
    Email: smayhew@redhat.com
 
 
    Charles Lever (editor)
    Oracle Corporation
    United States of America
-
    Email: chuck.lever@oracle.com
