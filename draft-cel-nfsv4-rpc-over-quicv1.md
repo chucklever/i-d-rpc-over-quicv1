@@ -34,12 +34,12 @@ author:
   email: chuck.lever@oracle.com
 
 normative:
-  I-D.ietf-nfsv4-rpc-tls:
   RFC1833:
   RFC5531:
   RFC5665:
   RFC9000:
   RFC9001:
+  RFC9289:
 
 informative:
   RFC0768:
@@ -115,25 +115,25 @@ QUICv1. Readers should already be familiar with ONC RPC {{RFC5531}}.
 RPC-over-QUIC provides peer authentication and encryption services
 using a framework based on Transport Layer Security (TLS).
 Ergo, RPC-over-QUIC inherently fulfills many of the requirements of
-{{I-D.ietf-nfsv4-rpc-tls}}.
+{{RFC9289}}.
 The details of QUIC's use of TLS are specified in {{RFC9001}}.
 In particular:
 
 - With QUICv1, security at the transport layer is always enabled.
   Thus, there is no need or use for the STARTTLS mechanism described
-  in {{Section 4 of I-D.ietf-nfsv4-rpc-tls}}.
+  in {{Section 4 of RFC9289}}.
 
-- The discussion in {{I-D.ietf-nfsv4-rpc-tls}} about the opportunistic
+- The discussion in {{RFC9289}} about the opportunistic
   use of TLS does not apply to RPC-over-QUIC.
 
 - The peer authentication requirements in {{Section 5.2 of
-  I-D.ietf-nfsv4-rpc-tls}} do apply to RPC-over-QUIC.
+  RFC9289}} do apply to RPC-over-QUIC.
 
 - The PKIX Extended Key Usage values defined in
-  {{I-D.ietf-nfsv4-rpc-tls}} are also valid for use with
+  {{RFC9289}} are also valid for use with
   RPC-over-QUIC.
 
-- The ALPN defined in {{Section 8.2 of I-D.ietf-nfsv4-rpc-tls}} is
+- The ALPN defined in {{Section 8.2 of RFC9289}} is
   also used for RPC-over-QUIC.
 
 ## RPC Message Framing
@@ -164,7 +164,7 @@ See {{Section 11 of RFC5531}}.
 > lars: If changes to the RPC-over-QUIC binding might be desired in
   the future, how would they be negotiated/expressed? Should a
   versioned ALPN be used instead of the one from
-  {{I-D.ietf-nfsv4-rpc-tls}}?
+  {{RFC9289}}?
 
 ## Connections and Streams
 
