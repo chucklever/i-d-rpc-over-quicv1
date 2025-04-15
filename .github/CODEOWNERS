@@ -1,2 +1,3 @@
-# Automatically generated CODEOWNERS file.
-draft-cel-nfsv4-rpc-over-quicv1.xml 
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-cel-nfsv4-rpc-over-quicv1.md bcodding@redhat.com smayhew@redhat.com chuck.lever@oracle.com
