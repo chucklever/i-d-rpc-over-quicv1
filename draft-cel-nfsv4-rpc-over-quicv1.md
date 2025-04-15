@@ -35,10 +35,12 @@ author:
 
 normative:
   RFC1833:
+  RFC5056:
   RFC5531:
   RFC5665:
   RFC9000:
   RFC9001:
+  RFC9266:
   RFC9289:
 
 informative:
@@ -270,6 +272,28 @@ active streams, and clients need to be prepared for this.
   version combination? Doing so would delegate demultiplexing of
   ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
   to flow over separate streams.
+
+# RPC Authentication Flavors
+
+Streams in a QUIC connection may use different RPC authentication
+flavors. One stream might use RPC_AUTH_UNIX, while at the same time,
+another might use RPCSEC_GSS.
+
+GSS mutual (peer) authentication occurs only after a QUIC connection
+has been established. It is a separate process, and is unchanged by
+the use of QUIC. Additionally, authentication of RPCSEC_GSS users is
+unchanged by the use of QUIC.
+
+RPCSEC_GSS can optionally perform per-RPC integrity or confidentiality
+protection. When operating within a QUIC connection, these GSS services
+become largely redundant.  An RPC implementation capable of concurrently
+using QUIC and RPCSEC_GSS MUST use Generic Security Service Application
+Program Interface (GSS-API) channel binding, as defined in {{RFC5056}},
+to determine when an underlying transport already provides a sufficient
+degree of confidentiality.
+
+RPC-over-QUIC implementations MUST provide the "tls-exporter" channel
+binding type, as defined in {{RFC9266}}.
 
 # Implementation Status
 
