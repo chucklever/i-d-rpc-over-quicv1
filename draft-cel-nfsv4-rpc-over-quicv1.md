@@ -45,12 +45,13 @@ informative:
   RFC0768:
   RFC0793:
   RFC7942:
+  RFC8166:
   RFC8881:
 
 --- abstract
 
 This document specifies a protocol for conveying Remote Procedure
-(RPC) messages on QUIC version 1 connections. It requires no revision
+(RPC) messages via QUIC version 1 connections. It requires no revision
 to application RPC protocols or the RPC protocol itself.
 
 --- note_Note
@@ -71,34 +72,51 @@ are on that page.
 
 # Introduction
 
-QUIC is a reliable, connection-oriented network transport protocol
-that is designed to be general-purpose and secure {{RFC9000}}. Its
-features include integrated transport layer security, multiple
-streams over each connection, fast reconnect, and robust recovery
-from packet loss and network congestion.
+The QUIC version 1 protocol is a secure, reliable connection-oriented
+network transport described in {{RFC9000}}. Its features include
+integrated transport layer security, multiple independent streams over
+each connection, fast reconnecting, and advanced packet loss recovery
+and congestion avoidance mechanisms.
 
-Open Network Computing Remote Procedure Call (often shortened
-to "RPC") is a Remote Procedure Call protocol that runs over a
-variety of network transports {{RFC5531}}. RPC implementations so far
-use UDP {{RFC0768}} or TCP {{RFC0793}}. This document specifies
-how to transport RPC messages over QUIC version 1.
+Open Network Computing Remote Procedure Call (often shortened to "RPC")
+is a Remote Procedure Call protocol that runs over a variety of network
+transports {{RFC5531}}. RPC implementations so far use UDP {{RFC0768}},
+TCP {{RFC0793}}, or RDMA {{RFC8166}}. This document specifies how to
+transport RPC messages over QUIC version 1.
 
-{:aside}
->Explain motivations:
->
->- TLS
-- Multiple streams--though applications are speculative at this point.
- (Maybe they will allow more sophisticated prioritization of traffic
- without the overhead of multiple TCP connections?)
-- Lower-latency connection setup--though NFS connections are typically
- long-lived.
-- Likely SMB adoption of QUIC should make QUIC implementations widely
- available.
->
->In addition, this section needs to document and demonstrate specific
-use cases that cannot be addressed using existing RPC transports and
-security mechanisms such as RPC-over-TCP, RPC-with-TLS, or
-RPC-over-RDMA.
+## Motivation For a New RPC Transport
+
+Viewed at a moderate distance, RPC over QUIC provides a similar
+feature set as RPC over TCP with TLS (as described in {{RFC9289}}).
+However, a closer look reveals some essential benefits of using
+QUIC transports:
+
+* Even though the QUIC protocol utilizes the same set of encryption
+  algorithms as TLSv1.3, the QUIC record protocol encrypts nearly
+  the entire transport layer header and authenticates each IP packet.
+  Advanced traffic analysis which was possible with TLS on TCP is no
+  longer possible. QUIC protects against transport packet spoofing
+  and downgrade attacks better than TLS on TCP.
+
+* Because many real IP networks are oversubscribed, packet loss
+  due to momentary link or switch saturation continues to be likely
+  even on well-maintained data center-quality network fabrics.
+
+  The QUIC protocol utilizes packet loss recovery and congestion
+  avoidance features that are lacking in TCP. Because TCP protocol
+  design has ossified, it is unlikely to gain these improvements.
+  QUIC is more extensible than TCP, meaning future improvements in
+  this area can be designed and deployed without application
+  disruption.
+
+* Further, because QUIC handles packet loss on a per-stream rather
+  than a per-connection basis, spreading RPC traffic across multiple
+  streams enables workloads to continue largely unperturbed while
+  packet recovery proceeds.
+
+* The QUIC protocol is designed to facilitate secure and automatic
+  transit of firewalls. Firewall transparency is a foundational
+  feature of NFSv4 (which is built on RPC).
 
 # Requirements Language
 
@@ -273,8 +291,13 @@ of this document.
 In addition, we are indebted to Lars Eggert and the QUIC
 working group for the creation of the QUIC transport protocol.
 
-The editor is grateful to Bill Baker, Greg Marsden, and Martin Thomson
+The editor is grateful to
+Bill Baker,
+Greg Marsden,
+Richard Scheffenegger,
+and Martin Thomson
 for their input and support.
+
 
 Special thanks to Transport Area Directors Martin Duke and
 Zaheduzzaman Sarker, NFSV4 Working Group Chairs David Noveck and
