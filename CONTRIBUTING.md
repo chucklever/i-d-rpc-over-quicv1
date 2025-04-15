@@ -17,15 +17,17 @@ BCP 78, 79, the TLP, and the TLP rules regarding code components (e.g. being
 subject to a Simplified BSD License) in Contributions.
 
 
-## Other Resources
+## Working Group Information
 
-Discussion of this work occurs on the
-[nfsv4 working group mailing list](https://mailarchive.ietf.org/arch/browse/nfsv4/)
-([subscribe](https://www.ietf.org/mailman/listinfo/nfsv4)).  In addition to
-contributions in GitHub, you are encouraged to participate in discussions there.
+Discussion of this work occurs on the [Network File System Version 4
+Working Group mailing list](mailto:nfsv4@ietf.org)
+([archive](https://mailarchive.ietf.org/arch/browse/nfsv4/),
+[subscribe](https://www.ietf.org/mailman/listinfo/nfsv4)).
+In addition to contributions in GitHub, you are encouraged to participate in
+discussions there.
 
 **Note**: Some working groups adopt a policy whereby substantive discussion of
 technical issues needs to occur on the mailing list.
 
 You might also like to familiarize yourself with other
-[working group documents](https://datatracker.ietf.org/wg/nfsv4/documents/).
+[Working Group documents](https://datatracker.ietf.org/wg/nfsv4/documents/).
