@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                                 S. Mayhew
 Intended status: Standards Track                                 Red Hat
-Expires: 6 January 2023                                    C. Lever, Ed.
+Expires: 17 October 2025                                   C. Lever, Ed.
                                                                   Oracle
-                                                             5 July 2022
+                                                           15 April 2025
 
 
                Remote Procedure Call over QUIC Version 1
@@ -16,7 +16,7 @@ Expires: 6 January 2023                                    C. Lever, Ed.
 Abstract
 
    This document specifies a protocol for conveying Remote Procedure
-   (RPC) messages on QUIC version 1 connections.  It requires no
+   (RPC) messages via QUIC version 1 connections.  It requires no
    revision to application RPC protocols or the RPC protocol itself.
 
 Note
@@ -48,11 +48,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 January 2023.
+   This Internet-Draft will expire on 17 October 2025.
 
 Copyright Notice
 
-   Copyright (c) 2022 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -67,54 +67,71 @@ Copyright Notice
 Table of Contents
 
    1.  Introduction
+     1.1.  Motivation For a New RPC Transport
    2.  Requirements Language
    3.  RPC-over-QUIC Framework
      3.1.  Transport Layer Security
-     3.2.  RPC Message Framing
-     3.3.  Connections and Streams
-   4.  Implementation Status
-   5.  Security Considerations
-   6.  IANA Considerations
-     6.1.  Netids for RPC-over-QUIC
-   7.  References
-     7.1.  Normative References
-     7.2.  Informative References
+     3.2.  Establishing a Connection
+     3.3.  RPC Message Framing
+     3.4.  Stream Count
+   4.  RPC Authentication Flavors
+   5.  Implementation Status
+   6.  Security Considerations
+   7.  IANA Considerations
+     7.1.  Netids for RPC-over-QUIC
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
 1.  Introduction
 
-   QUIC is a reliable, connection-oriented network transport protocol
-   that is designed to be general-purpose and secure [RFC9000].  Its
-   features include integrated transport layer security, multiple
-   streams over each connection, fast reconnect, and robust recovery
-   from packet loss and network congestion.
+   The QUIC version 1 protocol is a secure, reliable connection-oriented
+   network transport described in [RFC9000].  Its features include
+   integrated transport layer security, multiple independent streams
+   over each connection, fast reconnecting, and advanced packet loss
+   recovery and congestion avoidance mechanisms.
 
    Open Network Computing Remote Procedure Call (often shortened to
    "RPC") is a Remote Procedure Call protocol that runs over a variety
    of network transports [RFC5531].  RPC implementations so far use UDP
-   [RFC0768] or TCP [RFC0793].  This document specifies how to transport
-   RPC messages over QUIC version 1.
+   [RFC0768], TCP [RFC0793], or RDMA [RFC8166].  This document specifies
+   how to transport RPC messages over QUIC version 1.
 
-      |  Explain motivations:
-      |  
-      |     *  TLS
-      |  
-      |     *  Multiple streams--though applications are speculative at
-      |        this point.  (Maybe they will allow more sophisticated
-      |        prioritization of traffic without the overhead of
-      |        multiple TCP connections?)
-      |  
-      |     *  Lower-latency connection setup--though NFS connections
-      |        are typically long-lived.
-      |  
-      |     *  Likely SMB adoption of QUIC should make QUIC
-      |        implementations widely available.
-      |  
-      |  In addition, this section needs to document and demonstrate
-      |  specific use cases that cannot be addressed using existing RPC
-      |  transports and security mechanisms such as RPC-over-TCP, RPC-
-      |  with-TLS, or RPC-over-RDMA.
+1.1.  Motivation For a New RPC Transport
+
+   Viewed at a moderate distance, RPC over QUIC provides a similar
+   feature set as RPC over TCP with TLS (as described in [RFC9289]).
+   However, a closer look reveals some essential benefits of using QUIC
+   transports:
+
+   *  Even though the QUIC protocol utilizes the same set of encryption
+      algorithms as TLSv1.3, the QUIC record protocol encrypts nearly
+      the entire transport layer header and authenticates each IP
+      packet.  Advanced traffic analysis which was possible with TLS on
+      TCP is no longer possible.  QUIC protects against transport packet
+      spoofing and downgrade attacks better than TLS on TCP.
+
+   *  Because many real IP networks are oversubscribed, packet loss due
+      to momentary link or switch saturation continues to be likely even
+      on well-maintained data center-quality network fabrics.
+
+      The QUIC protocol utilizes packet loss recovery and congestion
+      avoidance features that are lacking in TCP.  Because TCP protocol
+      design has ossified, it is unlikely to gain these improvements.
+      QUIC is more extensible than TCP, meaning future improvements in
+      this area can be designed and deployed without application
+      disruption.
+
+   *  Further, because QUIC handles packet loss on a per-stream rather
+      than a per-connection basis, spreading RPC traffic across multiple
+      streams enables workloads to continue largely unperturbed while
+      packet recovery proceeds.
+
+   *  The QUIC protocol is designed to facilitate secure and automatic
+      transit of firewalls.  Firewall transparency is a foundational
+      feature of NFSv4 (which is built on RPC).
 
 2.  Requirements Language
 
@@ -135,33 +152,90 @@ Table of Contents
    RPC-over-QUIC provides peer authentication and encryption services
    using a framework based on Transport Layer Security (TLS).  Ergo,
    RPC-over-QUIC inherently fulfills many of the requirements of
-   [I-D.ietf-nfsv4-rpc-tls].  The details of QUIC's use of TLS are
-   specified in [RFC9001].  In particular:
+   [RFC9289].  The details of QUIC's use of TLS are specified in
+   [RFC9001].  In particular:
 
    *  With QUICv1, security at the transport layer is always enabled.
       Thus, there is no need or use for the STARTTLS mechanism described
-      in Section 4 of [I-D.ietf-nfsv4-rpc-tls].
+      in Section 4 of [RFC9289].
 
-   *  The discussion in [I-D.ietf-nfsv4-rpc-tls] about the opportunistic
-      use of TLS does not apply to RPC-over-QUIC.
+   *  The discussion in [RFC9289] about the opportunistic use of TLS
+      does not apply to RPC-over-QUIC.
 
-   *  The peer authentication requirements in Section 5.2 of
-      [I-D.ietf-nfsv4-rpc-tls] do apply to RPC-over-QUIC.
+   *  The peer authentication requirements in Section 5.2 of [RFC9289]
+      do apply to RPC-over-QUIC.
 
-   *  The PKIX Extended Key Usage values defined in
-      [I-D.ietf-nfsv4-rpc-tls] are also valid for use with RPC-over-
-      QUIC.
+   *  The PKIX Extended Key Usage values defined in [RFC9289] are also
+      valid for use with RPC-over-QUIC.
 
-   *  The ALPN defined in Section 8.2 of [I-D.ietf-nfsv4-rpc-tls] is
-      also used for RPC-over-QUIC.
+   *  The ALPN defined in Section 8.2 of [RFC9289] is also used for RPC-
+      over-QUIC.
 
-3.2.  RPC Message Framing
+3.2.  Establishing a Connection
 
-   Record marking on QUIC is exactly as in TCP.  See Section 11 of
-   [RFC5531].
+   Two peers that wish to exchange RPC messages on a QUIC transport must
+   first establish a QUIC connection.  As part of this process, the
+   peers authenticate to each other.
 
-      |  Discussion: This is the simplest thing to do.
-      |  
+   QUIC connections are not defined by the classic 5-tuple (IP proto,
+   source address, source port, destination address, and destination
+   port).  Rather, each connection is defined by its connection ID.
+   Thus, if the IP address of either peer should change, or a NAT/PAT
+   binding and the source UDP port changes, the receiver can still
+   recognize an ingress QUIC packet to belong to an established
+   connection.
+
+   QUIC connections are largely opaque to RPC consumers.  This means
+   that, due to network conditions or administrative actions, a QUIC
+   connection can be replaced (a reconnect event) or migrated (a
+   failover event) without altering the RPC messages flowing in the
+   connection's streams.
+
+3.3.  RPC Message Framing
+
+   QUIC provides a "stream" abstraction, described in Section 2 of
+   [RFC9000].  A QUIC connection carries one or more streams.  Either
+   connection peer may create a stream.
+
+   Unless explicitly specified, when RPC protocol specifications refer
+   to a "connection", this applies to a QUIC stream.  As an example, an
+   NFSv4.1 BIND_CONN_TO_SESSION operation [RFC8881] binds to a QUIC
+   stream.
+
+   When a connection peer creates a stream, that stream endpoint is
+   considered to be an "RPC client" or "Requester".  That endpoint MUST
+   send only RPC Call messages.  The other endpoint, known as an "RPC
+   server" or "Responder", MUST send only RPC Reply messages on that
+   stream.  Responders MUST send RPC Replies on the same stream on which
+   they received the matching RPC Call.  Receivers MUST silently discard
+   RPC messages whose direction field is incorrect.
+
+   Each QUIC stream carries a sequence of one or more unsplit RPC
+   messages.  Just as on TCP, each RPC message in a stream is demarked
+   by a 32-bit record marker (see Section 11 of [RFC5531]).
+
+3.4.  Stream Count
+
+   Given the above definition of RPC message framing on QUIC streams, it
+   is possible for a Requester to create a stream, send one RPC Call and
+   receive one RPC Reply, then destroy the stream.  That is a degenerate
+   case that might be used for simple protocols like rpcbind.
+
+   For protocols that carry a significant workload, this style of stream
+   allocation would generate needless overhead.  Instead, RPC clients
+   may create as many streams as is convenient to their design, but
+   reuse the streams efficiently.
+
+   For example, an RPC client could allocate a handful of streams per
+   CPU core to reduce contention for the streams and their associated
+   data structures.  Or, an RPC client could create a set of streams
+   whose count is the same as the number of slots in an NFSv4 session.
+
+   Servers that implement RPC over QUIC must be mindful that each
+   additional stream amounts to incremental overhead.  Servers can deny
+   the creation of new streams if a client already has many active
+   streams, and clients need to be prepared for this.
+
       |  bfields: Open question whether we should do something more
       |  complicated that adds RDMA-like features or at least provides
       |  some minimal help with data alignment.  Possibilities might
@@ -176,35 +250,12 @@ Table of Contents
       |  a software iWARP implementation means no special hardware is
       |  necessary.  Likewise, if MPA/DDP can be made to support QUIC,
       |  much of the need for a separate RPC-over-QUIC is moot.  In
-      |  addition, it would bring automatically transport layer security
+      |  addition, it would automatically bring transport layer security
       |  to other RDMA-enabled protocols (such as RPC-over-RDMA).
       |  
       |  lars: If changes to the RPC-over-QUIC binding might be desired
       |  in the future, how would they be negotiated/expressed?  Should
-      |  a versioned ALPN be used instead of the one from
-      |  [I-D.ietf-nfsv4-rpc-tls]?
-
-3.3.  Connections and Streams
-
-   QUIC provides a "stream" abstraction, described in Section 2 of
-   [RFC9000].  Each QUIC stream can be unidirectional or bidirectional.
-   QUIC supports a nearly unlimited number of concurrent streams per
-   connection.
-
-   Unless explicitly specified, when RPC protocol specifications refer
-   to a "connection", this applies to a QUIC connection, not to a
-   stream.  As an example, in the case of NFSv4.1 [RFC8881], a
-   BIND_CONN_TO_SESSION operation binds a QUIC connection and does not
-   need to be repeated for each stream on the connection.
-
-   An RPC Reply MUST be sent over the same connection and stream as the
-   Call message with a matching XID.  Forward-direction RPC messages
-   MUST be sent over a client-initiated bidirectional stream (stream
-   type 0x00).  Reverse-direction RPC messages MUST be sent over a
-   server-initiated bidirectional stream (stream type 0x01).  Otherwise,
-   unless otherwise explicitly specified, RPC callers are free to use
-   streams as they wish, and responders have to accommodate callers that
-   do so.
+      |  a versioned ALPN be used instead of the one from [RFC9289]?
 
       |  NFS requirement on resends: QUIC allows reconnecting using the
       |  same connection ID, so isn't breaking/reconnection somewhat
@@ -219,8 +270,38 @@ Table of Contents
       |  specified by the above.  Is the intent here to leave it to
       |  callers to decide if they want to use a fresh stream for each
       |  RPC, or reuse an existing stream for a series of RPCs?
+      |  
+      |  cel: We need to define a server backpressure mechanism akin to
+      |  the TCP window.
+      |  
+      |  cel: Should we limit each stream to carry only on RPC program
+      |  and version combination?  Doing so would delegate
+      |  demultiplexing of ingress RPC traffic to QUIC -- eg, NFSACL and
+      |  NFS would be required to flow over separate streams.
 
-4.  Implementation Status
+4.  RPC Authentication Flavors
+
+   Streams in a QUIC connection may use different RPC authentication
+   flavors.  One stream might use RPC_AUTH_UNIX, while at the same time,
+   another might use RPCSEC_GSS.
+
+   GSS mutual (peer) authentication occurs only after a QUIC connection
+   has been established.  It is a separate process, and is unchanged by
+   the use of QUIC.  Additionally, authentication of RPCSEC_GSS users is
+   unchanged by the use of QUIC.
+
+   RPCSEC_GSS can optionally perform per-RPC integrity or
+   confidentiality protection.  When operating within a QUIC connection,
+   these GSS services become largely redundant.  An RPC implementation
+   capable of concurrently using QUIC and RPCSEC_GSS MUST use Generic
+   Security Service Application Program Interface (GSS-API) channel
+   binding, as defined in [RFC5056], to determine when an underlying
+   transport already provides a sufficient degree of confidentiality.
+
+   RPC-over-QUIC implementations MUST provide the "tls-exporter" channel
+   binding type, as defined in [RFC9266].
+
+5.  Implementation Status
 
    This section is to be removed before publishing as an RFC.
 
@@ -242,18 +323,18 @@ Table of Contents
    There are no known implementations of RPC-over-QUICv1 as described in
    this document.
 
-5.  Security Considerations
+6.  Security Considerations
 
    Readers should refer to the discussion of QUIC's transport layer
    security in Section 21 of [RFC9000].
 
-6.  IANA Considerations
+7.  IANA Considerations
 
    RFC Editor: In the following subsections, please replace RFC-TBD with
    the RFC number assigned to this document.  Furthermore, please remove
    this Editor's Note before this document is published.
 
-6.1.  Netids for RPC-over-QUIC
+7.1.  Netids for RPC-over-QUIC
 
    Each new RPC transport is assigned one or more RPC "netid" strings.
    These strings are an rpcbind [RFC1833] string naming the underlying
@@ -277,16 +358,9 @@ Table of Contents
       |  practice with netids, but also seems to be a layering
       |  violation?
 
-7.  References
+8.  References
 
-7.1.  Normative References
-
-   [I-D.ietf-nfsv4-rpc-tls]
-              Myklebust, T. and C. Lever, "Towards Remote Procedure Call
-              Encryption By Default", Work in Progress, Internet-Draft,
-              draft-ietf-nfsv4-rpc-tls-11, 23 November 2020,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-nfsv4-
-              rpc-tls-11>.
+8.1.  Normative References
 
    [RFC1833]  Srinivasan, R., "Binding Protocols for ONC RPC Version 2",
               RFC 1833, DOI 10.17487/RFC1833, August 1995,
@@ -296,6 +370,10 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5056]  Williams, N., "On the Use of Channel Bindings to Secure
+              Channels", RFC 5056, DOI 10.17487/RFC5056, November 2007,
+              <https://www.rfc-editor.org/rfc/rfc5056>.
 
    [RFC5531]  Thurlow, R., "RPC: Remote Procedure Call Protocol
               Specification Version 2", RFC 5531, DOI 10.17487/RFC5531,
@@ -319,20 +397,34 @@ Table of Contents
               QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
               <https://www.rfc-editor.org/rfc/rfc9001>.
 
-7.2.  Informative References
+   [RFC9266]  Whited, S., "Channel Bindings for TLS 1.3", RFC 9266,
+              DOI 10.17487/RFC9266, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9266>.
+
+   [RFC9289]  Myklebust, T. and C. Lever, Ed., "Towards Remote Procedure
+              Call Encryption by Default", RFC 9289,
+              DOI 10.17487/RFC9289, September 2022,
+              <https://www.rfc-editor.org/rfc/rfc9289>.
+
+8.2.  Informative References
 
    [RFC0768]  Postel, J., "User Datagram Protocol", STD 6, RFC 768,
               DOI 10.17487/RFC0768, August 1980,
               <https://www.rfc-editor.org/rfc/rfc768>.
 
-   [RFC0793]  Postel, J., "Transmission Control Protocol", STD 7,
-              RFC 793, DOI 10.17487/RFC0793, September 1981,
+   [RFC0793]  Postel, J., "Transmission Control Protocol", RFC 793,
+              DOI 10.17487/RFC0793, September 1981,
               <https://www.rfc-editor.org/rfc/rfc793>.
 
    [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
               Code: The Implementation Status Section", BCP 205,
               RFC 7942, DOI 10.17487/RFC7942, July 2016,
               <https://www.rfc-editor.org/rfc/rfc7942>.
+
+   [RFC8166]  Lever, C., Ed., Simpson, W., and T. Talpey, "Remote Direct
+              Memory Access Transport for Remote Procedure Call Version
+              1", RFC 8166, DOI 10.17487/RFC8166, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8166>.
 
    [RFC8881]  Noveck, D., Ed. and C. Lever, "Network File System (NFS)
               Version 4 Minor Version 1 Protocol", RFC 8881,
@@ -346,8 +438,8 @@ Acknowledgments
    addition, we are indebted to Lars Eggert and the QUIC working group
    for the creation of the QUIC transport protocol.
 
-   The editor is grateful to Bill Baker, Greg Marsden, and Martin
-   Thomson for their input and support.
+   The editor is grateful to Bill Baker, Greg Marsden, Richard
+   Scheffenegger, and Martin Thomson for their input and support.
 
    Special thanks to Transport Area Directors Martin Duke and
    Zaheduzzaman Sarker, NFSV4 Working Group Chairs David Noveck and
