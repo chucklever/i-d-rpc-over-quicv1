@@ -154,14 +154,78 @@ In particular:
 - The ALPN defined in {{Section 8.2 of RFC9289}} is
   also used for RPC-over-QUIC.
 
+## Establishing a Connection
+
+Two peers that wish to exchange RPC messages on a QUIC transport
+must first establish a QUIC connection. As part of this process,
+the peers authenticate to each other.
+
+QUIC connections are not defined by the classic 5-tuple (IP proto,
+source address, source port, destination address, and destination
+port). Rather, each connection is defined by its connection ID.
+Thus, if the IP address of either peer should change, or a NAT/PAT
+binding and the source UDP port changes, the receiver can still
+recognize an ingress QUIC packet to belong to an established
+connection.
+
+QUIC connections are largely opaque to RPC consumers. This means
+that, due to network conditions or administrative actions, a
+QUIC connection can be replaced (a reconnect event) or migrated
+(a failover event) without altering the RPC messages flowing
+in the connection's streams.
+
 ## RPC Message Framing
 
-Record marking on QUIC is exactly as in TCP.
-See {{Section 11 of RFC5531}}.
+QUIC provides a "stream" abstraction, described in {{Section 2 of
+RFC9000}}. A QUIC connection carries one or more streams. Either
+connection peer may create a stream.
+
+Unless explicitly specified, when RPC protocol specifications
+refer to a "connection", this applies to a QUIC stream.
+As an example,
+an NFSv4.1 BIND_CONN_TO_SESSION operation {{RFC8881}} binds to
+a QUIC stream.
+
+When a connection peer creates a stream, that stream endpoint is
+considered to be an "RPC client" or "Requester". That endpoint
+MUST send only RPC Call messages. The other endpoint, known as
+an "RPC server" or "Responder", MUST send only RPC Reply messages
+on that stream.
+Responders MUST send RPC Replies on the same stream on which
+they received the matching RPC Call.
+Receivers MUST silently discard RPC messages whose
+direction field is incorrect.
+
+Each QUIC stream carries a sequence of one or more unsplit RPC
+messages. Just as on TCP, each RPC message in a stream is demarked
+by a 32-bit record marker (see {{Section 11 of RFC5531}}).
+
+## Stream Count
+
+Given the above definition of RPC message framing on QUIC
+streams, it is possible for a Requester to create a stream,
+send one RPC Call and receive one RPC Reply, then destroy the
+stream. That is a degenerate case that might be used for
+simple protocols like rpcbind.
+
+For protocols that carry a significant workload, this style of
+stream allocation would generate needless overhead. Instead,
+RPC clients may create as many streams as is convenient to their
+design, but reuse the streams efficiently.
+
+For example, an RPC client could allocate a handful of streams
+per CPU core to reduce contention for the streams and their
+associated data structures. Or, an RPC client could create a
+set of streams whose count is the same as the number of slots
+in an NFSv4 session.
+
+Servers that implement RPC over QUIC must be mindful that each
+additional stream amounts to incremental overhead. Servers can
+deny the creation of new streams if a client already has many
+active streams, and clients need to be prepared for this.
+
 
 {:aside}
->Discussion: This is the simplest thing to do.
->
 >bfields: Open question whether we should do something more
  complicated that adds RDMA-like features or at least provides some
  minimal help with data alignment.  Possibilities might include a
@@ -176,35 +240,13 @@ See {{Section 11 of RFC5531}}.
  software iWARP implementation means no special hardware is
  necessary. Likewise, if MPA/DDP can be made to support QUIC, much of
  the need for a separate RPC-over-QUIC is moot. In addition, it would
- bring automatically transport layer security to other RDMA-enabled
+ automatically bring transport layer security to other RDMA-enabled
  protocols (such as RPC-over-RDMA).
 >
 > lars: If changes to the RPC-over-QUIC binding might be desired in
   the future, how would they be negotiated/expressed? Should a
   versioned ALPN be used instead of the one from
   {{RFC9289}}?
-
-## Connections and Streams
-
-QUIC provides a "stream" abstraction, described in {{Section 2 of
-RFC9000}}. Each QUIC stream can be unidirectional or bidirectional.
-QUIC supports a nearly unlimited number of concurrent streams per
-connection.
-
-Unless explicitly specified, when RPC protocol specifications refer to
-a "connection", this applies to a QUIC connection, not to a stream.
-As an example, in the case of NFSv4.1 {{RFC8881}}, a
-BIND_CONN_TO_SESSION operation binds a QUIC connection and does not
-need to be repeated for each stream on the connection.
-
-An RPC Reply MUST be sent over the same connection and stream as the
-Call message with a matching XID. Forward-direction RPC messages MUST
-be sent over a client-initiated bidirectional stream (stream type
-0x00). Reverse-direction RPC messages MUST be sent over a
-server-initiated bidirectional stream (stream type 0x01). Otherwise,
-unless otherwise explicitly specified, RPC callers are free to use
-streams as they wish, and responders have to accommodate callers that
-do so.
 
 {:aside}
 >NFS requirement on resends: QUIC allows reconnecting using the same
@@ -220,6 +262,14 @@ do so.
   the above. Is the intent here to leave it to callers to decide if
   they want to use a fresh stream for each RPC, or reuse an existing
   stream for a series of RPCs?
+>
+> cel: We need to define a server backpressure mechanism akin to the
+  TCP window.
+>
+> cel: Should we limit each stream to carry only on RPC program and
+  version combination? Doing so would delegate demultiplexing of
+  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
+  to flow over separate streams.
 
 # Implementation Status
 
