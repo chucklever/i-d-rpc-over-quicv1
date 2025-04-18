@@ -128,13 +128,49 @@ QUIC transports:
 
 RPC is first and foremost a message-passing protocol. This section
 covers the implementaion details of exchanging RPC messages over
-QUICv1. Readers should already be familiar with ONC RPC {{RFC5531}}.
+QUICv1. Readers should already be familiar with the fundamentals
+of ONC RPC (see {{RFC5531}}).
 
-## Transport Layer Security
+## Establishing a Connection
 
-RPC-over-QUIC provides peer authentication and encryption services
+When a network host wishes to send RPC requests to a remote
+service via QUICv1, it must first find an established QUICv1
+connection, or establish a new one.
+
+For the purpose of explanation, the peer that initiates QUICv1
+connection establishment is referred to as an "RPC client" peer.
+The peer that passively accepts the connection is referred to a
+an "RPC server" peer.
+
+QUICv1 connections are not defined by the classic 5-tuple (IP proto,
+source address, source port, destination address, and destination
+port). Rather, each connection is defined by its connection ID.
+Thus, if the IP address of either peer should change, or a NAT/PAT
+binding and the source UDP port changes, the receiver can still
+recognize an ingress QUICv1 packet to belong to an established
+connection.
+
+Because all QUICv1 traffic goes to a single port and is
+demultiplexed on the receiving peer, the usual precursor step of
+the RPC client sending an rpcbind query to the RPC server is
+unneeded before an RPC-over-QUICv1 connection is to be established.
+
+As a result, due to network conditions or administrative actions,
+an RPC-over-QUICv1 connection can be replaced (a reconnect event)
+or migrated (a failover event) without interrupting the operation
+of an upper layer protocol.
+
+### Transport Layer Security
+
+As part of establishing a QUICv1 connection, the two connecting
+peers authenticate to each other and choose encryption parameters
+to establish a confidential channel of communication. All traffic
+on one QUICv1 connection is thus bound to the authentication
+identity that was used during connection establishment.
+
+RPC-over-QUICv1 provides peer authentication and encryption services
 using a framework based on Transport Layer Security (TLS).
-Ergo, RPC-over-QUIC inherently fulfills many of the requirements of
+Ergo, RPC-over-QUICv1 inherently fulfills many of the requirements of
 {{RFC9289}}.
 The details of QUIC's use of TLS are specified in {{RFC9001}}.
 In particular:
@@ -143,77 +179,79 @@ In particular:
   Thus, there is no need or use for the STARTTLS mechanism described
   in {{Section 4 of RFC9289}}.
 
-- The discussion in {{RFC9289}} about the opportunistic
-  use of TLS does not apply to RPC-over-QUIC.
+- The discussion in {{RFC9289}} about the opportunistic use of
+  TLS does not apply to RPC-over-QUICv1.
 
 - The peer authentication requirements in {{Section 5.2 of
-  RFC9289}} do apply to RPC-over-QUIC.
+  RFC9289}} do apply to RPC-over-QUICv1.
 
-- The PKIX Extended Key Usage values defined in
-  {{RFC9289}} are also valid for use with
-  RPC-over-QUIC.
+- The PKIX Extended Key Usage values defined in {{RFC9289}} are
+  also valid for use with RPC-over-QUICv1.
 
-- The ALPN defined in {{Section 8.2 of RFC9289}} is
-  also used for RPC-over-QUIC.
+- The ALPN defined in {{Section 8.2 of RFC9289}} is also used
+  for RPC-over-QUICv1.
 
-## Establishing a Connection
+## QUIC Streams
 
-Two peers that wish to exchange RPC messages on a QUIC transport
-must first establish a QUIC connection. As part of this process,
-the peers authenticate to each other.
+RPC-over-QUICv1 connections are mediated entirely by each peer's
+RPC layer and are not visible to RPC applications. An RPC client
+establishes a QUICv1 connection whenever there are application
+RPC requests to be executed.
 
-QUIC connections are not defined by the classic 5-tuple (IP proto,
-source address, source port, destination address, and destination
-port). Rather, each connection is defined by its connection ID.
-Thus, if the IP address of either peer should change, or a NAT/PAT
-binding and the source UDP port changes, the receiver can still
-recognize an ingress QUIC packet to belong to an established
-connection.
+QUICv1 provides a "stream" abstraction, described in {{Section 2 of
+RFC9000}}. A QUICv1 connection carries one or more streams. Once a
+QUICv1 connection has been established, either connection peer may
+create a stream. Typically, the RPC client peer creates the first
+stream on a connection.
 
-QUIC connections are largely opaque to RPC consumers. This means
-that, due to network conditions or administrative actions, a
-QUIC connection can be replaced (a reconnect event) or migrated
-(a failover event) without altering the RPC messages flowing
-in the connection's streams.
+Unless explicitly specified, when RPC protocol specifications refer
+to a "connection", for RPC-over-QUICv1, this is a stream. As an
+example, an NFSv4.1 BIND_CONN_TO_SESSION operation {{RFC8881}} binds
+to a QUICv1 stream. As another example, to signify the loss of an
+RPC request, an NFS server closes the QUICv1 stream that received
+that request, but not the encompassing QUICv1 connection.
+
+In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
+"tpi_cots_ord" transport: connection-oriented and in order.
 
 ## RPC Message Framing
 
-QUIC provides a "stream" abstraction, described in {{Section 2 of
-RFC9000}}. A QUIC connection carries one or more streams. Either
-connection peer may create a stream.
+When a connection peer creates a QUICv1 stream, that peer's stream
+endpoint is referred to as a "Requester", and MUST emit only RPC
+Call messages on that stream.
+The other endpoint is referred to as a "Responder", and MUST emit
+only RPC Reply messages on that stream.
+Receivers MUST silently discard RPC messages whose direction field
+is incorrect.
 
-Unless explicitly specified, when RPC protocol specifications
-refer to a "connection", this applies to a QUIC stream.
-As an example,
-an NFSv4.1 BIND_CONN_TO_SESSION operation {{RFC8881}} binds to
-a QUIC stream.
+Requesters and Responders match RPC Calls to RPC Replies using
+the XID carried in each RPC message. Responders MUST send RPC
+Replies on the same stream on which they received the matching
+RPC Call.
 
-When a connection peer creates a stream, that stream endpoint is
-considered to be an "RPC client" or "Requester". That endpoint
-MUST send only RPC Call messages. The other endpoint, known as
-an "RPC server" or "Responder", MUST send only RPC Reply messages
-on that stream.
-Responders MUST send RPC Replies on the same stream on which
-they received the matching RPC Call.
-Receivers MUST silently discard RPC messages whose
-direction field is incorrect.
+Each RPC QUICv1 stream carries a sequence of one or more unsplit
+RPC messages. Just as on TCP, each RPC message is an ordered
+sequence of one or more records. Each record begins with a
+four-octet record marker.
 
-Each QUIC stream carries a sequence of one or more unsplit RPC
-messages. Just as on TCP, each RPC message in a stream is demarked
-by a 32-bit record marker (see {{Section 11 of RFC5531}}).
+A record marker contains the count of octets in the record in its
+lower 31 bits, and a flag that indicates whether the record is
+the last record in the RPC message in the highest order bit.
+See {{Section 11 of RFC5531}} for a comparison with TCP record
+markers.
 
 ## Stream Count
 
-Given the above definition of RPC message framing on QUIC
+Given the above definition of RPC message framing on QUICv1
 streams, it is possible for a Requester to create a stream,
-send one RPC Call and receive one RPC Reply, then destroy the
+send one RPC Call, receive one RPC Reply, then destroy the
 stream. That is a degenerate case that might be used for
-simple protocols like rpcbind.
+simple RPC-based protocols like rpcbind.
 
 For protocols that carry a significant workload, this style of
 stream allocation would generate needless overhead. Instead,
 RPC clients may create as many streams as is convenient to their
-design, but reuse the streams efficiently.
+design, but should reuse the streams efficiently.
 
 For example, an RPC client could allocate a handful of streams
 per CPU core to reduce contention for the streams and their
@@ -221,11 +259,11 @@ associated data structures. Or, an RPC client could create a
 set of streams whose count is the same as the number of slots
 in an NFSv4 session.
 
-Servers that implement RPC over QUIC must be mindful that each
-additional stream amounts to incremental overhead. Servers can
-deny the creation of new streams if a client already has many
-active streams, and clients need to be prepared for this.
-
+Servers that implement RPC-over-QUICv1 must be mindful that each
+additional stream amounts to incremental overhead. RPC servers
+MAY deny the creation of new streams if an RPC client already
+has many active streams. RPC clients need to be prepared for
+this.
 
 {:aside}
 >bfields: Open question whether we should do something more
@@ -244,6 +282,13 @@ active streams, and clients need to be prepared for this.
  the need for a separate RPC-over-QUIC is moot. In addition, it would
  automatically bring transport layer security to other RDMA-enabled
  protocols (such as RPC-over-RDMA).
+>
+> cel: I will say however that it should be possible to create a
+  "chunk" abstraction (similar to RPC-over-RDMA) where the
+  RPC-over-QUICv1 protocol header identifies octet ranges of an RPC
+  message that are to be sent via other QUIC streams. This would
+  assume that it is valid for some streams on a QUIC connection to
+  carry traffic that is not in the form of an RPC message sequence.
 >
 > lars: If changes to the RPC-over-QUIC binding might be desired in
   the future, how would they be negotiated/expressed? Should a
@@ -267,6 +312,9 @@ active streams, and clients need to be prepared for this.
 >
 > cel: We need to define a server backpressure mechanism akin to the
   TCP window.
+>
+> cel: Still not clear how RPC program/version discovery will work
+  in a world with no endpoint port numbers.
 >
 > cel: Should we limit each stream to carry only on RPC program and
   version combination? Doing so would delegate demultiplexing of
@@ -353,6 +401,10 @@ document (RFC-TBD) as the reference for the new entries.
 {:aside}
 > lars: Why one per IP address family? This seems common practice with
   netids, but also seems to be a layering violation?
+> cel: That question might be out of scope for this document.
+  netids very nearly amount to technical debt at this point.
+> cel: Do we need a section that adds a reference for this document
+  to the RFC 9289 ALPN definition ?
 
 --- back
 
