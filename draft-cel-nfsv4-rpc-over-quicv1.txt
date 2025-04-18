@@ -80,6 +80,7 @@ Table of Contents
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  Netids for RPC-over-QUIC
+     7.2.  ALPN Identifier for SunRPC on QUICv1
    8.  References
      8.1.  Normative References
      8.2.  Informative References
@@ -407,10 +408,21 @@ Table of Contents
 
       |  lars: Why one per IP address family?  This seems common
       |  practice with netids, but also seems to be a layering
-      |  violation? cel: That question might be out of scope for this
-      |  document.  netids very nearly amount to technical debt at this
-      |  point. cel: Do we need a section that adds a reference for this
-      |  document to the RFC 9289 ALPN definition ?
+      |  violation?
+      |  
+      |  cel: That question might be out of scope for this document.
+      |  netids very nearly amount to technical debt at this point.
+
+7.2.  ALPN Identifier for SunRPC on QUICv1
+
+   RPC-over-QUICv1 utilizes the same ALPN string as RPC-with-TLS does,
+   as defined in Section 7.2 of [RFC9289]:
+
+      Identification Sequence:  0x73 0x75 0x6e 0x72 0x70 0x63 ("sunrpc")
+
+   This document requests that a reference to (RFC-TBD) be added to the
+   SunRPC protocol entry in the "TLS Application-Layer Protocol
+   Negotiation (ALPN) Protocol IDs" registry.
 
 8.  References
 

@@ -1205,6 +1205,9 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
                 <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-netids-for-rpc-over-quic" class="internal xref">Netids for RPC-over-QUIC</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-alpn-identifier-for-sunrpc-" class="internal xref">ALPN Identifier for SunRPC on QUICv1</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
@@ -1592,12 +1595,27 @@ transport, and "quic6" for IPv6 addressing. IANA should use this
 document (RFC-TBD) as the reference for the new entries.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
 <aside id="section-7.1-5">
           <p id="section-7.1-5.1">lars: Why one per IP address family? This seems common practice with
-  netids, but also seems to be a layering violation?
-cel: That question might be out of scope for this document.
-  netids very nearly amount to technical debt at this point.
-cel: Do we need a section that adds a reference for this document
-  to the RFC 9289 ALPN definition ?<a href="#section-7.1-5.1" class="pilcrow">¶</a></p>
+  netids, but also seems to be a layering violation?<a href="#section-7.1-5.1" class="pilcrow">¶</a></p>
+<p id="section-7.1-5.2">cel: That question might be out of scope for this document.
+  netids very nearly amount to technical debt at this point.<a href="#section-7.1-5.2" class="pilcrow">¶</a></p>
 </aside>
+</section>
+</div>
+<div id="alpn-identifier-for-sunrpc-on-quicv1">
+<section id="section-7.2">
+        <h3 id="name-alpn-identifier-for-sunrpc-">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-alpn-identifier-for-sunrpc-" class="section-name selfRef">ALPN Identifier for SunRPC on QUICv1</a>
+        </h3>
+<p id="section-7.2-1">RPC-over-QUICv1 utilizes the same ALPN string as RPC-with-TLS
+does, as defined in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-7.2" class="relref">Section 7.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2-2">
+<pre>
+   Identification Sequence:  0x73 0x75 0x6e 0x72 0x70 0x63 ("sunrpc")
+</pre><a href="#section-7.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-3">This document requests that a reference to (RFC-TBD) be added to
+the SunRPC protocol entry in the "TLS Application-Layer Protocol
+Negotiation (ALPN) Protocol IDs" registry.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
