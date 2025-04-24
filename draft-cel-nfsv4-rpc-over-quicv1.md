@@ -150,15 +150,27 @@ binding and the source UDP port changes, the receiver can still
 recognize an ingress QUICv1 packet to belong to an established
 connection.
 
-Because all QUICv1 traffic goes to a single port and is
-demultiplexed on the receiving peer, the usual precursor step of
-the RPC client sending an rpcbind query to the RPC server is
-unneeded before an RPC-over-QUICv1 connection is to be established.
-
 As a result, due to network conditions or administrative actions,
 an RPC-over-QUICv1 connection can be replaced (a reconnect event)
 or migrated (a failover event) without interrupting the operation
-of an upper layer protocol.
+of an upper layer protocol such as RPC-over-QUICv1. A more complete
+discussion can be found in {{Section 9 of RFC9000}}.
+
+## RPC Service Discovery
+
+Because all QUICv1 traffic goes to a single port and is
+demultiplexed on the receiving peer, the usual precursor step of
+the RPC client sending an rpcbind query to the RPC server before
+an RPC-over-QUICv1 connection is to be established is unneeded.
+
+Notice that we now have to invent a new way to perform proper
+RPC service discovery. The historical method of discovering an RPC
+service is to send an rpcbind query to a well-known port number
+(port 111). The result of an rpcbind query contains the IP address
+and port number of the requested RPC service.
+
+For QUICv1, the port number is part of the QUICv1 connection, and
+is the same for all QUICv1 traffic directed to that network host.
 
 ### Transport Layer Security
 
@@ -204,17 +216,20 @@ QUICv1 connection has been established, either connection peer may
 create a stream. Typically, the RPC client peer creates the first
 stream on a connection.
 
-Unless explicitly specified, when RPC protocol specifications refer
-to a "connection", for RPC-over-QUICv1, this is a stream. As an
-example, an NFSv4.1 BIND_CONN_TO_SESSION operation {{RFC8881}} binds
-to a QUICv1 stream. As another example, to signify the loss of an
-RPC request, an NFS server closes the QUICv1 stream that received
-that request, but not the encompassing QUICv1 connection.
+Unless explicitly specified, when RPC upper layer protocol
+specifications refer to a "connection", for RPC-over-QUICv1, this
+is a stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
+operation {{RFC8881}} binds to a QUICv1 stream. As another example,
+to signify the loss of an RPC request, an NFS server closes the
+QUICv1 stream that received that request, but it does close not the
+encompassing QUICv1 connection.
 
 In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 "tpi_cots_ord" transport: connection-oriented and in order.
 
 ## RPC Message Framing
+
+RPC-over-QUICv1 uses only bidirectional streams.
 
 When a connection peer creates a QUICv1 stream, that peer's stream
 endpoint is referred to as a "Requester", and MUST emit only RPC
@@ -222,23 +237,29 @@ Call messages on that stream.
 The other endpoint is referred to as a "Responder", and MUST emit
 only RPC Reply messages on that stream.
 Receivers MUST silently discard RPC messages whose direction field
-is incorrect.
+does not match its Requester/Responder role.
 
 Requesters and Responders match RPC Calls to RPC Replies using
 the XID carried in each RPC message. Responders MUST send RPC
 Replies on the same stream on which they received the matching
 RPC Call.
 
-Each RPC QUICv1 stream carries a sequence of one or more unsplit
-RPC messages. Just as on TCP, each RPC message is an ordered
-sequence of one or more records. Each record begins with a
-four-octet record marker.
+Because each QUICv1 stream is an ordered-byte stream, an
+RPC-with-QUICv1 stream carries only a sequence of complete RPC
+messages. Although data from multiple streams can be interleaved
+on a single QUICv1 connection, RPC messages MUST NOT be interleaved
+on one stream.
 
-A record marker contains the count of octets in the record in its
-lower 31 bits, and a flag that indicates whether the record is
-the last record in the RPC message in the highest order bit.
-See {{Section 11 of RFC5531}} for a comparison with TCP record
-markers.
+Just as with RPC on a TCP socket, each RPC message is an ordered
+sequence of one or more records on a single stream. Such RPC records
+bear no relationship to QUIC stream frames; in fact, stream frames
+as defined in {{RFC9000}} are not visible to RPC endpoints.
+
+Each RPC record begins with a four-octet record marker. A record
+marker contains the count of octets in the record in its lower 31
+bits, and a flag that indicates whether the record is the last
+record in the RPC message in the highest order bit. See
+{{Section 11 of RFC5531}} for a comparison with TCP record markers.
 
 ## Stream Count
 
@@ -249,9 +270,16 @@ stream. That is a degenerate case that might be used for
 simple RPC-based protocols like rpcbind.
 
 For protocols that carry a significant workload, this style of
-stream allocation would generate needless overhead. Instead,
-RPC clients may create as many streams as is convenient to their
-design, but should reuse the streams efficiently.
+stream allocation would generate needless overhead. Moreover,
+stream identifiers cannot be re-used on one QUICv1 connection,
+so eventually a QUICv1 connection can no longer create a new
+stream for each RPC XIDs. And finally, a connection peer may
+advertise a max_streams value that is significantly lower than
+2 ^ 60.
+
+Instead, RPC clients may create as many streams as is convenient
+to their design, but should reuse streams on each connection
+efficiently.
 
 For example, an RPC client could allocate a handful of streams
 per CPU core to reduce contention for the streams and their
