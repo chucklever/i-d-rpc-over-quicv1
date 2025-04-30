@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                                 S. Mayhew
 Intended status: Standards Track                                 Red Hat
-Expires: 26 October 2025                                   C. Lever, Ed.
+Expires: 1 November 2025                                   C. Lever, Ed.
                                                                   Oracle
-                                                           24 April 2025
+                                                           30 April 2025
 
 
                Remote Procedure Call over QUIC Version 1
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 October 2025.
+   This Internet-Draft will expire on 1 November 2025.
 
 Copyright Notice
 
@@ -536,10 +536,9 @@ Acknowledgments
    The editor is grateful to Bill Baker, Greg Marsden, Richard
    Scheffenegger, and Martin Thomson for their input and support.
 
-   Special thanks to Transport Area Directors Martin Duke and
-   Zaheduzzaman Sarker, NFSV4 Working Group Chairs David Noveck and
-   Brian Pawlowski, and NFSV4 Working Group Secretary Thomas Haynes for
-   their guidance and oversight.
+   Special thanks to Area Director Gorry Fairhurst, NFSV4 Working Group
+   Chairs Brian Pawlowski and Christopher Inacio, and NFSV4 Working
+   Group Secretary Thomas Haynes for their guidance and oversight.
 
 Authors' Addresses
 
