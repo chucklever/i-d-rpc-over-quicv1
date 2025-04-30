@@ -465,7 +465,14 @@ and Martin Thomson
 for their input and support.
 
 
-Special thanks to Transport Area Directors Martin Duke and
-Zaheduzzaman Sarker, NFSV4 Working Group Chairs David Noveck and
-Brian Pawlowski, and NFSV4 Working Group Secretary Thomas Haynes for
-their guidance and oversight.
+Special thanks to
+Area Director
+Gorry Fairhurst,
+NFSV4 Working Group Chairs
+Brian Pawlowski
+and
+Christopher Inacio,
+and
+NFSV4 Working Group Secretary
+Thomas Haynes
+for their guidance and oversight.
