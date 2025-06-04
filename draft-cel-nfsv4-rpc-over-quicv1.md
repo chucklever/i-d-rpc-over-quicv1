@@ -128,8 +128,12 @@ QUIC transports:
 
 RPC is first and foremost a message-passing protocol. This section
 covers the implementaion details of exchanging RPC messages over
-QUICv1. Readers should already be familiar with the fundamentals
+QUIC. Readers should already be familiar with the fundamentals
 of ONC RPC (see {{RFC5531}}).
+
+RPC-over-QUIC relies on QUIC version 1 as the underlying transport
+{{RFC9000}}. The use of other QUIC transport versions with RPC MAY
+be defined by future specifications.
 
 ## Establishing a Connection
 
@@ -151,17 +155,17 @@ recognize an ingress QUICv1 packet to belong to an established
 connection.
 
 As a result, due to network conditions or administrative actions,
-an RPC-over-QUICv1 connection can be replaced (a reconnect event)
+an RPC-over-QUIC connection can be replaced (a reconnect event)
 or migrated (a failover event) without interrupting the operation
-of an upper layer protocol such as RPC-over-QUICv1. A more complete
+of an upper layer protocol such as RPC-over-QUIC. A more complete
 discussion can be found in {{Section 9 of RFC9000}}.
 
 ## RPC Service Discovery
 
-Because all QUICv1 traffic goes to a single port and is
+Because all QUIC traffic goes to a single port and is
 demultiplexed on the receiving peer, the usual precursor step of
 the RPC client sending an rpcbind query to the RPC server before
-an RPC-over-QUICv1 connection is to be established is unneeded.
+an RPC-over-QUIC connection is to be established is unneeded.
 
 Notice that we now have to invent a new way to perform proper
 RPC service discovery. The historical method of discovering an RPC
@@ -176,13 +180,11 @@ is the same for all QUICv1 traffic directed to that network host.
 
 As part of establishing a QUICv1 connection, the two connecting
 peers authenticate to each other and choose encryption parameters
-to establish a confidential channel of communication. All traffic
-on one QUICv1 connection is thus bound to the authentication
-identity that was used during connection establishment.
+to establish a confidential channel of communication.
 
-RPC-over-QUICv1 provides peer authentication and encryption services
+RPC-over-QUIC provides peer authentication and encryption services
 using a framework based on Transport Layer Security (TLS).
-Ergo, RPC-over-QUICv1 inherently fulfills many of the requirements of
+Ergo, RPC-over-QUIC inherently fulfills many of the requirements of
 {{RFC9289}}.
 The details of QUIC's use of TLS are specified in {{RFC9001}}.
 In particular:
@@ -192,23 +194,23 @@ In particular:
   in {{Section 4 of RFC9289}}.
 
 - The discussion in {{RFC9289}} about the opportunistic use of
-  TLS does not apply to RPC-over-QUICv1.
+  TLS does not apply to RPC-over-QUIC.
 
 - The peer authentication requirements in {{Section 5.2 of
-  RFC9289}} do apply to RPC-over-QUICv1.
+  RFC9289}} do apply to RPC-over-QUIC.
 
 - The PKIX Extended Key Usage values defined in {{RFC9289}} are
-  also valid for use with RPC-over-QUICv1.
+  also valid for use with RPC-over-QUIC.
 
 - The ALPN defined in {{Section 8.2 of RFC9289}} is also used
-  for RPC-over-QUICv1.
+  for RPC-over-QUIC.
 
 ## QUIC Streams
 
-RPC-over-QUICv1 connections are mediated entirely by each peer's
+RPC-over-QUIC connections are mediated entirely by each peer's
 RPC layer and are not visible to RPC applications. An RPC client
-establishes a QUICv1 connection whenever there are application
-RPC requests to be executed.
+establishes an RPC-over-QUIC connection whenever there are
+application RPC transactions to be executed.
 
 QUICv1 provides a "stream" abstraction, described in {{Section 2 of
 RFC9000}}. A QUICv1 connection carries one or more streams. Once a
@@ -217,7 +219,7 @@ create a stream. Typically, the RPC client peer creates the first
 stream on a connection.
 
 Unless explicitly specified, when RPC upper layer protocol
-specifications refer to a "connection", for RPC-over-QUICv1, this
+specifications refer to a "connection", for RPC-over-QUIC, this
 is a stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
 operation {{RFC8881}} binds to a QUICv1 stream. As another example,
 to signify the loss of an RPC request, an NFS server closes the
@@ -229,7 +231,7 @@ In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 
 ## RPC Message Framing
 
-RPC-over-QUICv1 uses only bidirectional streams.
+RPC-over-QUIC uses only bidirectional streams.
 
 When a connection peer creates a QUICv1 stream, that peer's stream
 endpoint is referred to as a "Requester", and MUST emit only RPC
@@ -245,7 +247,7 @@ Replies on the same stream on which they received the matching
 RPC Call.
 
 Because each QUICv1 stream is an ordered-byte stream, an
-RPC-with-QUICv1 stream carries only a sequence of complete RPC
+RPC-with-QUIC stream carries only a sequence of complete RPC
 messages. Although data from multiple streams can be interleaved
 on a single QUICv1 connection, RPC messages MUST NOT be interleaved
 on one stream.
@@ -287,7 +289,7 @@ associated data structures. Or, an RPC client could create a
 set of streams whose count is the same as the number of slots
 in an NFSv4 session.
 
-Servers that implement RPC-over-QUICv1 must be mindful that each
+Servers that implement RPC-over-QUIC must be mindful that each
 additional stream amounts to incremental overhead. RPC servers
 MAY deny the creation of new streams if an RPC client already
 has many active streams. RPC clients need to be prepared for
@@ -313,7 +315,7 @@ this.
 >
 > cel: I will say however that it should be possible to create a
   "chunk" abstraction (similar to RPC-over-RDMA) where the
-  RPC-over-QUICv1 protocol header identifies octet ranges of an RPC
+  RPC-over-QUIC protocol header identifies octet ranges of an RPC
   message that are to be sent via other QUIC streams. This would
   assume that it is valid for some streams on a QUIC connection to
   carry traffic that is not in the form of an RPC message sequence.
@@ -390,7 +392,7 @@ construed to be, a catalog of available implementations or their
 features. Readers are advised to note that other implementations may
 exist.
 
-There are no known implementations of RPC-over-QUICv1 as
+There are no known implementations of RPC-over-QUIC as
 described in this document.
 
 # Security Considerations
@@ -433,9 +435,9 @@ document (RFC-TBD) as the reference for the new entries.
 > cel: That question might be out of scope for this document.
   netids very nearly amount to technical debt at this point.
 
-## ALPN Identifier for SunRPC on QUICv1
+## ALPN Identifier for SunRPC on QUIC
 
-RPC-over-QUICv1 utilizes the same ALPN string as RPC-with-TLS
+RPC-over-QUIC utilizes the same ALPN string as RPC-with-TLS
 does, as defined in {{Section 7.2 of RFC9289}}:
 
 ~~~
