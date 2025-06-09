@@ -22,12 +22,12 @@ to application RPC protocols or the RPC protocol itself.
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
-    lxml 5.3.0
-    platformdirs 4.3.7
+    lxml 5.3.1
+    platformdirs 4.3.8
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.3
-    setuptools 70.3.0
+    setuptools 80.9.0
     wcwidth 0.2.13
 -->
 <link href="draft-cel-nfsv4-rpc-over-quicv1.xml" rel="alternate" type="application/rfc+xml">
@@ -1047,11 +1047,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RPC over QUIC</td>
-<td class="right">April 2025</td>
+<td class="right">June 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Coddington, et al.</td>
-<td class="center">Expires 1 November 2025</td>
+<td class="center">Expires 11 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-cel-nfsv4-rpc-over-quicv1-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-04-30" class="published">30 April 2025</time>
+<time datetime="2025-06-09" class="published">9 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-11-01">1 November 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1128,7 +1128,7 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 November 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1173,6 +1173,11 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
                 <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-establishing-a-connection" class="internal xref">Establishing a Connection</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.1">
+                    <p id="section-toc.1-1.3.2.1.2.1.1"><a href="#section-3.1.1" class="auto internal xref">3.1.1</a>.  <a href="#name-connection-transport-parame" class="internal xref">Connection Transport Parameters</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-rpc-service-discovery" class="internal xref">RPC Service Discovery</a></p>
@@ -1187,9 +1192,6 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
                 <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-rpc-message-framing" class="internal xref">RPC Message Framing</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
-                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-stream-count" class="internal xref">Stream Count</a></p>
 </li>
             </ul>
 </li>
@@ -1209,7 +1211,7 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
                 <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-netids-for-rpc-over-quic" class="internal xref">Netids for RPC-over-QUIC</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-alpn-identifier-for-sunrpc-" class="internal xref">ALPN Identifier for SunRPC on QUICv1</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-alpn-identifier-for-sunrpc-" class="internal xref">ALPN Identifier for SunRPC on QUIC</a></p>
 </li>
             </ul>
 </li>
@@ -1313,8 +1315,11 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       </h2>
 <p id="section-3-1">RPC is first and foremost a message-passing protocol. This section
 covers the implementaion details of exchanging RPC messages over
-QUICv1. Readers should already be familiar with the fundamentals
-of ONC RPC (see <span>[<a href="#RFC5531" class="cite xref">RFC5531</a>]</span>).<a href="#section-3-1" class="pilcrow">¶</a></p>
+QUIC. Readers should already be familiar with the fundamentals
+of ONC RPC <span>[<a href="#RFC5531" class="cite xref">RFC5531</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">RPC-over-QUIC relies on QUIC version 1 as the underlying transport
+<span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>. The use of other QUIC transport versions with RPC <span class="bcp14">MAY</span>
+be defined by future specifications.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div id="establishing-a-connection">
 <section id="section-3.1">
         <h3 id="name-establishing-a-connection">
@@ -1323,22 +1328,92 @@ of ONC RPC (see <span>[<a href="#RFC5531" class="cite xref">RFC5531</a>]</span>)
 <p id="section-3.1-1">When a network host wishes to send RPC requests to a remote
 service via QUICv1, it must first find an established QUICv1
 connection, or establish a new one.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">For the purpose of explanation, the peer that initiates QUICv1
-connection establishment is referred to as an "RPC client" peer.
-The peer that passively accepts the connection is referred to a
-an "RPC server" peer.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">QUICv1 connections are not defined by the classic 5-tuple (IP proto,
-source address, source port, destination address, and destination
-port). Rather, each connection is defined by its connection ID.
-Thus, if the IP address of either peer should change, or a NAT/PAT
-binding and the source UDP port changes, the receiver can still
-recognize an ingress QUICv1 packet to belong to an established
-connection.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">For the purpose of explanation, this document refers to the
+peer that initiates QUICv1 connection establishment as an
+"RPC client" peer. This document refers to the peer that
+passively accepts an incoming connection request as an
+"RPC server" peer.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">QUICv1 connections are not completely defined by the classic
+5-tuple (IP proto, source address, source port, destination
+address, and destination port). Each connection is also defined
+by its QUIC connection ID. For instance, if the IP address of
+either peer should change, or a NAT/PAT binding and the source
+UDP port changes, the receiver can still recognize an ingress
+QUICv1 packet as belonging to an established connection.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">As a result, due to network conditions or administrative actions,
-an RPC-over-QUICv1 connection can be replaced (a reconnect event)
+an RPC-over-QUIC connection can be replaced (a reconnect event)
 or migrated (a failover event) without interrupting the operation
-of an upper layer protocol such as RPC-over-QUICv1. A more complete
+of an upper layer protocol such as RPC-over-QUIC. A more complete
 discussion can be found in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<div id="connection-transport-parameters">
+<section id="section-3.1.1">
+          <h4 id="name-connection-transport-parame">
+<a href="#section-3.1.1" class="section-number selfRef">3.1.1. </a><a href="#name-connection-transport-parame" class="section-name selfRef">Connection Transport Parameters</a>
+          </h4>
+<p id="section-3.1.1-1">When establishing a connection, peers exchange transport
+parameters, as described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-7.4" class="relref">Section 7.4</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>.<a href="#section-3.1.1-1" class="pilcrow">¶</a></p>
+<div id="initial-flow-control-limits">
+<section id="section-3.1.1.1">
+            <h5 id="name-initial-flow-control-limits">
+<a href="#section-3.1.1.1" class="section-number selfRef">3.1.1.1. </a><a href="#name-initial-flow-control-limits" class="section-name selfRef">Initial Flow Control Limits</a>
+            </h5>
+<p id="section-3.1.1.1-1">These limits control the amount of data that each peer may send
+on a newly-created stream. The limits are used for flow control
+and cap the amount of memory needed by both peers to keep data
+flowing on the connection. The value of these limits are typically
+based on the bandwidth-delay of the physical link between the
+peers, and are not exposed to RPC applications.<a href="#section-3.1.1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="number-of-streams-per-connection">
+<section id="section-3.1.1.2">
+            <h5 id="name-number-of-streams-per-conne">
+<a href="#section-3.1.1.2" class="section-number selfRef">3.1.1.2. </a><a href="#name-number-of-streams-per-conne" class="section-name selfRef">Number of Streams Per Connection</a>
+            </h5>
+<p id="section-3.1.1.2-1">Each QUICv1 peer may limit the number of streams per
+connection; see <span><a href="https://rfc-editor.org/rfc/rfc9000#section-4.6" class="relref">Section 4.6</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>.<a href="#section-3.1.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-2">Given the definition of RPC message framing in <a href="#sec-framing" class="auto internal xref">Section 3.4</a>,
+it is possible for an RPC client to create a stream, send one
+RPC Call, receive one RPC Reply, then destroy the stream. That
+usage might be common with simple RPC-based protocols like
+rpcbind.<a href="#section-3.1.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-3">For protocols that carry a more intensive workload, this style of
+stream allocation generates needless overhead. Moreover, stream
+identifiers cannot be re-used on a single QUICv1 connection,
+so eventually a QUICv1 connection can no longer create a new
+stream for each RPC XID. Finally, a connection peer may
+advertise a max_streams value that is significantly lower than
+2 ^ 60.<a href="#section-3.1.1.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-4">Instead, RPC clients may create enough streams to maximize
+opportunities for workload parallism, and should avoid sending
+only a few RPCs on each stream.<a href="#section-3.1.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-5">For example, an RPC client could allocate a handful of streams
+per CPU core to reduce contention for the streams and their
+associated data structures. Or, an RPC client could create a
+set of streams whose count is the same as the number of slots
+in an NFSv4.1 session.<a href="#section-3.1.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-6">Servers that implement RPC-over-QUIC must be mindful that each
+additional stream amounts to incremental overhead. RPC servers
+<span class="bcp14">MAY</span> deny the creation of new streams if an RPC client already
+has many active streams. RPC clients need to be prepared for
+that behavior.<a href="#section-3.1.1.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="maximum-frame-size">
+<section id="section-3.1.1.3">
+            <h5 id="name-maximum-frame-size">
+<a href="#section-3.1.1.3" class="section-number selfRef">3.1.1.3. </a><a href="#name-maximum-frame-size" class="section-name selfRef">Maximum Frame Size</a>
+            </h5>
+<p id="section-3.1.1.3-1">This size is the largest QUIC frame that can appear in any
+stream on this connection. The QUIC framing protocol is not
+visible to the RPC application. The RPC client and server
+can therefore negotiate a frame size that enables efficient
+transit of RPC traffic with minimal internal memory
+fragmentation.<a href="#section-3.1.1.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="rpc-service-discovery">
@@ -1346,53 +1421,61 @@ discussion can be found in <span><a href="https://rfc-editor.org/rfc/rfc9000#sec
         <h3 id="name-rpc-service-discovery">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-rpc-service-discovery" class="section-name selfRef">RPC Service Discovery</a>
         </h3>
-<p id="section-3.2-1">Because all QUICv1 traffic goes to a single port and is
-demultiplexed on the receiving peer, the usual precursor step of
-the RPC client sending an rpcbind query to the RPC server before
-an RPC-over-QUICv1 connection is to be established is unneeded.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">Notice that we now have to invent a new way to perform proper
-RPC service discovery. The historical method of discovering an RPC
-service is to send an rpcbind query to a well-known port number
-(port 111). The result of an rpcbind query contains the IP address
-and port number of the requested RPC service.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.2-3">For QUICv1, the port number is part of the QUICv1 connection, and
-is the same for all QUICv1 traffic directed to that network host.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">For RPC, the destination port is special. RPC services may use
+a standardized destination port that is bound to an RPC program
+number. Such ports are assigned in the IANA Service Name and
+Transport Protocol Port Number registry <span>[<a href="#IANA" class="cite xref">IANA</a>]</span>.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">For example, the rpcbind program, which is RPC program 100000,
+listens on port 111. This is done so that RPC clients can always
+contact the rpcbind service and discover the other RPC services
+that are operating on that network peer.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">In other cases, an RPC service might use any available port. The
+RPC server registers its port number with the local rpcbind service
+so that RPC clients can contact that service.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">This mechanism is no different for RPC-over-QUIC than it is for
+RPC on other network transports. rpcbind clients specify an RPC
+program number and either the "quic" or "quic6" netid when
+requesting information about a QUIC-based RPC service. More detail
+is available in <a href="#sec-netids" class="auto internal xref">Section 7.1</a>.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <div id="transport-layer-security">
 <section id="section-3.2.1">
           <h4 id="name-transport-layer-security">
 <a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-transport-layer-security" class="section-name selfRef">Transport Layer Security</a>
           </h4>
-<p id="section-3.2.1-1">As part of establishing a QUICv1 connection, the two connecting
+<p id="section-3.2.1-1">During connection establishment, the client peer indicates
+RPC-over-QUIC support by presenting the ALPN token "sunrpc" in
+the TLS handshake. Support for other application-layer protocols
+<span class="bcp14">MAY</span> be offered in the same handshake.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-2">As part of establishing a QUICv1 connection, the two connecting
 peers authenticate to each other and choose encryption parameters
 to establish a confidential channel of communication. All traffic
-on one QUICv1 connection is thus bound to the authentication
-identity that was used during connection establishment.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.2.1-2">RPC-over-QUICv1 provides peer authentication and encryption services
-using a framework based on Transport Layer Security (TLS).
-Ergo, RPC-over-QUICv1 inherently fulfills many of the requirements of
-<span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>.
-The details of QUIC's use of TLS are specified in <span>[<a href="#RFC9001" class="cite xref">RFC9001</a>]</span>.
-In particular:<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
+on one QUICv1 connection is thus bound to the authenticated
+identities that were presented during connection establishment.
+These peer identities apply to the streams and RPC messages
+carried by that connection.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-3">RPC-over-QUIC provides peer authentication and encryption services
+using a framework based on Transport Layer Security (TLS). Ergo,
+RPC-over-QUIC inherently fulfills many of the requirements of
+<span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>. The details of QUIC's use of TLS are specified in
+<span>[<a href="#RFC9001" class="cite xref">RFC9001</a>]</span>. In particular:<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.2.1-3.1">
-              <p id="section-3.2.1-3.1.1">With QUICv1, security at the transport layer is always enabled.
-Thus, there is no need or use for the STARTTLS mechanism described
-in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-4" class="relref">Section 4</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>.<a href="#section-3.2.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2.1-4.1">
+              <p id="section-3.2.1-4.1.1">With QUICv1, security at the transport layer is always enabled.
+Therefore, the discussion in <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> about the opportunistic
+use of TLS does not apply to RPC-over-QUIC, and the STARTTLS
+mechanism described in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-4" class="relref">Section 4</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> <span class="bcp14">MUST NOT</span> be used
+on RPC-over-QUIC connections.<a href="#section-3.2.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.2.1-3.2">
-              <p id="section-3.2.1-3.2.1">The discussion in <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> about the opportunistic use of
-TLS does not apply to RPC-over-QUICv1.<a href="#section-3.2.1-3.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.2.1-4.2">
+              <p id="section-3.2.1-4.2.1">The peer authentication requirements in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-5.2" class="relref">Section 5.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> apply to RPC-over-QUIC.<a href="#section-3.2.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.2.1-3.3">
-              <p id="section-3.2.1-3.3.1">The peer authentication requirements in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-5.2" class="relref">Section 5.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> do apply to RPC-over-QUICv1.<a href="#section-3.2.1-3.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.2.1-4.3">
+              <p id="section-3.2.1-4.3.1">The PKIX Extended Key Usage values defined in <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> are
+valid for use with RPC-over-QUIC.<a href="#section-3.2.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.2.1-3.4">
-              <p id="section-3.2.1-3.4.1">The PKIX Extended Key Usage values defined in <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> are
-also valid for use with RPC-over-QUICv1.<a href="#section-3.2.1-3.4.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-3.2.1-3.5">
-              <p id="section-3.2.1-3.5.1">The ALPN defined in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-8.2" class="relref">Section 8.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> is also used
-for RPC-over-QUICv1.<a href="#section-3.2.1-3.5.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.2.1-4.4">
+              <p id="section-3.2.1-4.4.1">The ALPN defined in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-8.2" class="relref">Section 8.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span> is also used
+for RPC-over-QUIC.<a href="#section-3.2.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -1404,31 +1487,36 @@ for RPC-over-QUICv1.<a href="#section-3.2.1-3.5.1" class="pilcrow">¶</a></p>
         <h3 id="name-quic-streams">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-quic-streams" class="section-name selfRef">QUIC Streams</a>
         </h3>
-<p id="section-3.3-1">RPC-over-QUICv1 connections are mediated entirely by each peer's
-RPC layer and are not visible to RPC applications. An RPC client
-establishes a QUICv1 connection whenever there are application
-RPC requests to be executed.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">RPC-over-QUIC connections are mediated entirely by each peer's
+RPC layer and, aside from authentication and connection transport
+parameters, are not otherwise visible to RPC applications. An RPC
+client establishes an RPC-over-QUIC connection whenever there are
+application RPC transactions to be executed.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">QUICv1 provides a "stream" abstraction, described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-2" class="relref">Section 2</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>. A QUICv1 connection carries one or more streams. Once a
 QUICv1 connection has been established, either connection peer may
 create a stream. Typically, the RPC client peer creates the first
 stream on a connection.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <p id="section-3.3-3">Unless explicitly specified, when RPC upper layer protocol
-specifications refer to a "connection", for RPC-over-QUICv1, this
-is a stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
+specifications refer to a "connection", for RPC-over-QUIC, this
+is a QUIC stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
 operation <span>[<a href="#RFC8881" class="cite xref">RFC8881</a>]</span> binds to a QUICv1 stream. As another example,
 to signify the loss of an RPC request, an NFS server closes the
 QUICv1 stream that received that request, but it does close not the
 encompassing QUICv1 connection.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 <p id="section-3.3-4">In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 "tpi_cots_ord" transport: connection-oriented and in order.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<aside id="section-3.3-5">
+          <p id="section-3.3-5.1">cel: There is an opportunity here to add a stream that acts
+  as a control plane.<a href="#section-3.3-5.1" class="pilcrow">¶</a></p>
+</aside>
 </section>
 </div>
-<div id="rpc-message-framing">
+<div id="sec-framing">
 <section id="section-3.4">
         <h3 id="name-rpc-message-framing">
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-rpc-message-framing" class="section-name selfRef">RPC Message Framing</a>
         </h3>
-<p id="section-3.4-1">RPC-over-QUICv1 uses only bidirectional streams.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">RPC-over-QUIC uses only bidirectional streams.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <p id="section-3.4-2">When a connection peer creates a QUICv1 stream, that peer's stream
 endpoint is referred to as a "Requester", and <span class="bcp14">MUST</span> emit only RPC
 Call messages on that stream.
@@ -1440,99 +1528,76 @@ does not match its Requester/Responder role.<a href="#section-3.4-2" class="pilc
 the XID carried in each RPC message. Responders <span class="bcp14">MUST</span> send RPC
 Replies on the same stream on which they received the matching
 RPC Call.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
-<p id="section-3.4-4">Because each QUICv1 stream is an ordered-byte stream, an
-RPC-with-QUICv1 stream carries only a sequence of complete RPC
+<p id="section-3.4-4">Each QUICv1 stream provides reliable in-order delivery of bytes.
+However, each stream makes no guarantees about delivery order with
+regard to bytes on other streams on the same connection.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+<p id="section-3.4-5">The stream data containing RPC records is carried by QUIC STREAM
+frames, but this framing is invisible to the RPC layer. The
+transport layer buffers and orders received stream data, exposing
+only a reliable byte stream to the RPC layer. Although QUIC permits
+out-of-order delivery within a stream, RPC-over-QUIC does not make
+use of this feature.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
+<p id="section-3.4-6">Because each QUICv1 stream is an ordered-byte stream, an
+RPC-with-QUIC stream carries only a sequence of complete RPC
 messages. Although data from multiple streams can be interleaved
 on a single QUICv1 connection, RPC messages <span class="bcp14">MUST NOT</span> be interleaved
-on one stream.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
-<p id="section-3.4-5">Just as with RPC on a TCP socket, each RPC message is an ordered
+on one stream.<a href="#section-3.4-6" class="pilcrow">¶</a></p>
+<p id="section-3.4-7">Just as with RPC on a TCP socket, each RPC message is an ordered
 sequence of one or more records on a single stream. Such RPC records
 bear no relationship to QUIC stream frames; in fact, stream frames
-as defined in <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span> are not visible to RPC endpoints.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
-<p id="section-3.4-6">Each RPC record begins with a four-octet record marker. A record
+as defined in <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span> are not visible to RPC endpoints.<a href="#section-3.4-7" class="pilcrow">¶</a></p>
+<p id="section-3.4-8">Each RPC record begins with a four-octet record marker. A record
 marker contains the count of octets in the record in its lower 31
 bits, and a flag that indicates whether the record is the last
 record in the RPC message in the highest order bit. See
-<span><a href="https://rfc-editor.org/rfc/rfc5531#section-11" class="relref">Section 11</a> of [<a href="#RFC5531" class="cite xref">RFC5531</a>]</span> for a comparison with TCP record markers.<a href="#section-3.4-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="stream-count">
-<section id="section-3.5">
-        <h3 id="name-stream-count">
-<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-stream-count" class="section-name selfRef">Stream Count</a>
-        </h3>
-<p id="section-3.5-1">Given the above definition of RPC message framing on QUICv1
-streams, it is possible for a Requester to create a stream,
-send one RPC Call, receive one RPC Reply, then destroy the
-stream. That is a degenerate case that might be used for
-simple RPC-based protocols like rpcbind.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
-<p id="section-3.5-2">For protocols that carry a significant workload, this style of
-stream allocation would generate needless overhead. Moreover,
-stream identifiers cannot be re-used on one QUICv1 connection,
-so eventually a QUICv1 connection can no longer create a new
-stream for each RPC XIDs. And finally, a connection peer may
-advertise a max_streams value that is significantly lower than
-2 ^ 60.<a href="#section-3.5-2" class="pilcrow">¶</a></p>
-<p id="section-3.5-3">Instead, RPC clients may create as many streams as is convenient
-to their design, but should reuse streams on each connection
-efficiently.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
-<p id="section-3.5-4">For example, an RPC client could allocate a handful of streams
-per CPU core to reduce contention for the streams and their
-associated data structures. Or, an RPC client could create a
-set of streams whose count is the same as the number of slots
-in an NFSv4 session.<a href="#section-3.5-4" class="pilcrow">¶</a></p>
-<p id="section-3.5-5">Servers that implement RPC-over-QUICv1 must be mindful that each
-additional stream amounts to incremental overhead. RPC servers
-<span class="bcp14">MAY</span> deny the creation of new streams if an RPC client already
-has many active streams. RPC clients need to be prepared for
-this.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
-<aside id="section-3.5-6">
-          <p id="section-3.5-6.1">bfields: Open question whether we should do something more
+<span><a href="https://rfc-editor.org/rfc/rfc5531#section-11" class="relref">Section 11</a> of [<a href="#RFC5531" class="cite xref">RFC5531</a>]</span> for a comparison with TCP record markers.<a href="#section-3.4-8" class="pilcrow">¶</a></p>
+<aside id="section-3.4-9">
+          <p id="section-3.4-9.1">bfields: Open question whether we should do something more
  complicated that adds RDMA-like features or at least provides some
  minimal help with data alignment.  Possibilities might include a
  single additional integer giving the offset of a payload, serving
  only as a hint; or reference additional streams in the same
  connection for payloads; or even looking into full RDMA--long-term
  there may be interest in supporting RDMA over QUIC, and we may be
- able to piggyback on that effort.<a href="#section-3.5-6.1" class="pilcrow">¶</a></p>
-<p id="section-3.5-6.2">cel: Direct data placement over TCP can already be accomplished
+ able to piggyback on that effort.<a href="#section-3.4-9.1" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.2">cel: Direct data placement over TCP can already be accomplished
  today using MPA/DDP protocols (formerly known as iWARP). Using a
  software iWARP implementation means no special hardware is
  necessary. Likewise, if MPA/DDP can be made to support QUIC, much of
  the need for a separate RPC-over-QUIC is moot. In addition, it would
  automatically bring transport layer security to other RDMA-enabled
- protocols (such as RPC-over-RDMA).<a href="#section-3.5-6.2" class="pilcrow">¶</a></p>
-<p id="section-3.5-6.3">cel: I will say however that it should be possible to create a
+ protocols (such as RPC-over-RDMA).<a href="#section-3.4-9.2" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.3">cel: I will say however that it should be possible to create a
   "chunk" abstraction (similar to RPC-over-RDMA) where the
-  RPC-over-QUICv1 protocol header identifies octet ranges of an RPC
+  RPC-over-QUIC protocol header identifies octet ranges of an RPC
   message that are to be sent via other QUIC streams. This would
   assume that it is valid for some streams on a QUIC connection to
-  carry traffic that is not in the form of an RPC message sequence.<a href="#section-3.5-6.3" class="pilcrow">¶</a></p>
-<p id="section-3.5-6.4">lars: If changes to the RPC-over-QUIC binding might be desired in
+  carry traffic that is not in the form of an RPC message sequence.<a href="#section-3.4-9.3" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.4">lars: If changes to the RPC-over-QUIC binding might be desired in
   the future, how would they be negotiated/expressed? Should a
   versioned ALPN be used instead of the one from
-  <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>?<a href="#section-3.5-6.4" class="pilcrow">¶</a></p>
+  <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>?<a href="#section-3.4-9.4" class="pilcrow">¶</a></p>
 </aside>
-<aside id="section-3.5-7">
-          <p id="section-3.5-7.1">NFS requirement on resends: QUIC allows reconnecting using the same
+<aside id="section-3.4-10">
+          <p id="section-3.4-10.1">NFS requirement on resends: QUIC allows reconnecting using the same
  connection ID, so isn't breaking/reconnection somewhat ambiguous?
  When can a server drop or a client resend? Any advice needed for
- server-side DRC implementations?<a href="#section-3.5-7.1" class="pilcrow">¶</a></p>
-<p id="section-3.5-7.2">lars: I'm not sure I understand what is meant by "reconnecting"
+ server-side DRC implementations?<a href="#section-3.4-10.1" class="pilcrow">¶</a></p>
+<p id="section-3.4-10.2">lars: I'm not sure I understand what is meant by "reconnecting"
   above. Is this referring to connection migration? Or a 0-RTT
-  repeated connection instance? Something else?<a href="#section-3.5-7.2" class="pilcrow">¶</a></p>
-<p id="section-3.5-7.3">lars: Also, I'm not sure if the use of streams is fully specified by
+  repeated connection instance? Something else?<a href="#section-3.4-10.2" class="pilcrow">¶</a></p>
+<p id="section-3.4-10.3">lars: Also, I'm not sure if the use of streams is fully specified by
   the above. Is the intent here to leave it to callers to decide if
   they want to use a fresh stream for each RPC, or reuse an existing
-  stream for a series of RPCs?<a href="#section-3.5-7.3" class="pilcrow">¶</a></p>
-<p id="section-3.5-7.4">cel: We need to define a server backpressure mechanism akin to the
-  TCP window.<a href="#section-3.5-7.4" class="pilcrow">¶</a></p>
-<p id="section-3.5-7.5">cel: Still not clear how RPC program/version discovery will work
-  in a world with no endpoint port numbers.<a href="#section-3.5-7.5" class="pilcrow">¶</a></p>
-<p id="section-3.5-7.6">cel: Should we limit each stream to carry only on RPC program and
+  stream for a series of RPCs?<a href="#section-3.4-10.3" class="pilcrow">¶</a></p>
+<p id="section-3.4-10.4">cel: We need to define a server backpressure mechanism akin to the
+  TCP window.<a href="#section-3.4-10.4" class="pilcrow">¶</a></p>
+<p id="section-3.4-10.5">cel: Still not clear how RPC program/version discovery will work
+  in a world with no endpoint port numbers.<a href="#section-3.4-10.5" class="pilcrow">¶</a></p>
+<p id="section-3.4-10.6">cel: Should we limit each stream to carry only on RPC program and
   version combination? Doing so would delegate demultiplexing of
   ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
-  to flow over separate streams.<a href="#section-3.5-7.6" class="pilcrow">¶</a></p>
+  to flow over separate streams.<a href="#section-3.4-10.6" class="pilcrow">¶</a></p>
 </aside>
 </section>
 </div>
@@ -1580,7 +1645,7 @@ by IETF contributors. This is not intended as, and must not be
 construed to be, a catalog of available implementations or their
 features. Readers are advised to note that other implementations may
 exist.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">There are no known implementations of RPC-over-QUICv1 as
+<p id="section-5-4">There are no known implementations of RPC-over-QUIC as
 described in this document.<a href="#section-5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1601,7 +1666,7 @@ security in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-21" class=
 <p id="section-7-1">RFC Editor: In the following subsections, please replace RFC-TBD with
 the RFC number assigned to this document. Furthermore, please remove
 this Editor's Note before this document is published.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<div id="netids-for-rpc-over-quic">
+<div id="sec-netids">
 <section id="section-7.1">
         <h3 id="name-netids-for-rpc-over-quic">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-netids-for-rpc-over-quic" class="section-name selfRef">Netids for RPC-over-QUIC</a>
@@ -1632,12 +1697,12 @@ document (RFC-TBD) as the reference for the new entries.<a href="#section-7.1-4"
 </aside>
 </section>
 </div>
-<div id="alpn-identifier-for-sunrpc-on-quicv1">
+<div id="alpn-identifier-for-sunrpc-on-quic">
 <section id="section-7.2">
         <h3 id="name-alpn-identifier-for-sunrpc-">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-alpn-identifier-for-sunrpc-" class="section-name selfRef">ALPN Identifier for SunRPC on QUICv1</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-alpn-identifier-for-sunrpc-" class="section-name selfRef">ALPN Identifier for SunRPC on QUIC</a>
         </h3>
-<p id="section-7.2-1">RPC-over-QUICv1 utilizes the same ALPN string as RPC-with-TLS
+<p id="section-7.2-1">RPC-over-QUIC utilizes the same ALPN string as RPC-with-TLS
 does, as defined in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-7.2" class="relref">Section 7.2</a> of [<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7.2-2">
 <pre>
@@ -1662,6 +1727,10 @@ Negotiation (ALPN) Protocol IDs" registry.<a href="#section-7.2-3" class="pilcro
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="IANA">[IANA]</dt>
+        <dd>
+<span class="refTitle">"IANA Service Name and Transport Protocol Port Number registry"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt">https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC1833">[RFC1833]</dt>
         <dd>
 <span class="refAuthor">Srinivasan, R.</span>, <span class="refTitle">"Binding Protocols for ONC RPC Version 2"</span>, <span class="seriesInfo">RFC 1833</span>, <span class="seriesInfo">DOI 10.17487/RFC1833</span>, <time datetime="1995-08" class="refDate">August 1995</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc1833">https://www.rfc-editor.org/rfc/rfc1833</a>&gt;</span>. </dd>
@@ -1750,7 +1819,9 @@ working group for the creation of the QUIC transport protocol.<a href="#appendix
 Bill Baker,
 Greg Marsden,
 Richard Scheffenegger,
-and Martin Thomson
+Martin Thomson,
+and
+Long Xin
 for their input and support.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
 <p id="appendix-A-3">Special thanks to
 Area Director
