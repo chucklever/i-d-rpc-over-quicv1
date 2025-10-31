@@ -49,6 +49,7 @@ normative:
 informative:
   RFC0768:
   RFC0793:
+  RFC5040:
   RFC7942:
   RFC8166:
   RFC8881:
@@ -355,30 +356,6 @@ record in the RPC message in the highest order bit. See
 {{Section 11 of RFC5531}} for a comparison with TCP record markers.
 
 {:aside}
->bfields: Open question whether we should do something more
- complicated that adds RDMA-like features or at least provides some
- minimal help with data alignment.  Possibilities might include a
- single additional integer giving the offset of a payload, serving
- only as a hint; or reference additional streams in the same
- connection for payloads; or even looking into full RDMA--long-term
- there may be interest in supporting RDMA over QUIC, and we may be
- able to piggyback on that effort.
->
->cel: Direct data placement over TCP can already be accomplished
- today using MPA/DDP protocols (formerly known as iWARP). Using a
- software iWARP implementation means no special hardware is
- necessary. Likewise, if MPA/DDP can be made to support QUIC, much of
- the need for a separate RPC-over-QUIC is moot. In addition, it would
- automatically bring transport layer security to other RDMA-enabled
- protocols (such as RPC-over-RDMA).
->
-> cel: I will say however that it should be possible to create a
-  "chunk" abstraction (similar to RPC-over-RDMA) where the
-  RPC-over-QUIC protocol header identifies octet ranges of an RPC
-  message that are to be sent via other QUIC streams. This would
-  assume that it is valid for some streams on a QUIC connection to
-  carry traffic that is not in the form of an RPC message sequence.
->
 > lars: If changes to the RPC-over-QUIC binding might be desired in
   the future, how would they be negotiated/expressed? Should a
   versioned ALPN be used instead of the one from
@@ -409,6 +386,35 @@ record in the RPC message in the highest order bit. See
   version combination? Doing so would delegate demultiplexing of
   ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
   to flow over separate streams.
+
+### Receiver Data Placement Assistance
+
+One recurring weakness with RPC on TCP is that large payloads (for
+instance, in NFS WRITEs) can land at arbitrary offsets in receive
+buffers, limiting the ability for receivers to handle the payloads
+with zero-touch tactics such as direct I/O.
+
+It remains an open question whether RPC-over-QUIC should implement
+RDMA-like features or features that simply provide help with data
+placement on receivers. Possibilities include:
+
+- A single additional integer giving the offset of a payload, serving
+  only as a hint;
+
+- Include references to separate streams in the same connection that
+  contain opaque payloads, similar to RDMA chunks; this would presume
+  that it is valid for some streams on a QUIC connection to carry
+  traffic that is not in the form of an RPC message sequence.
+
+Long-term there could be interest in supporting RDMA over QUIC. Direct
+data placement over TCP can already be accomplished today using MPA/DDP
+protocols (formerly known as iWARP; see {{RFC5040}}). Using a software
+iWARP implementation means no special hardware is required.
+
+If the MPA/DDP protocols themselves can be made to operate directly on
+QUIC transports, much of the need for a separate RPC-over-QUIC becomes
+moot. It would bring transport layer security to other RDMA-enabled
+protocols, such as RPC-over-RDMA {{RFC8166}}.
 
 # RPC Authentication Flavors
 
