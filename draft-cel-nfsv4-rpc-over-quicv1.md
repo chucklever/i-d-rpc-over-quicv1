@@ -315,6 +315,11 @@ In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 {:aside}
 > cel: There is an opportunity here to add a stream that acts
   as a control plane.
+>
+> cel: Should we limit each stream to carry only one RPC program and
+  version combination? Doing so would delegate demultiplexing of
+  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
+  to flow over separate streams.
 
 ## RPC Message Framing {#sec-framing}
 
@@ -362,12 +367,6 @@ record in the RPC message in the highest order bit. See
 {{Section 11 of RFC5531}} for a comparison with TCP record markers.
 
 {:aside}
-> lars: If changes to the RPC-over-QUIC binding might be desired in
-  the future, how would they be negotiated/expressed? Should a
-  versioned ALPN be used instead of the one from
-  {{RFC9289}}?
-
-{:aside}
 >NFS requirement on resends: QUIC allows reconnecting using the same
  connection ID, so isn't breaking/reconnection somewhat ambiguous?
  When can a server drop or a client resend? Any advice needed for
@@ -384,14 +383,6 @@ record in the RPC message in the highest order bit. See
 >
 > cel: We need to define a server backpressure mechanism akin to the
   TCP window.
->
-> cel: Still not clear how RPC program/version discovery will work
-  in a world with no endpoint port numbers.
->
-> cel: Should we limit each stream to carry only on RPC program and
-  version combination? Doing so would delegate demultiplexing of
-  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
-  to flow over separate streams.
 
 ### Receiver Data Placement Assistance
 
@@ -560,6 +551,12 @@ does, as defined in {{Section 7.2 of RFC9289}}:
 This document requests that a reference to (RFC-TBD) be added to
 the SunRPC protocol entry in the "TLS Application-Layer Protocol
 Negotiation (ALPN) Protocol IDs" registry.
+
+{:aside}
+> lars: If changes to the RPC-over-QUIC binding might be desired in
+  the future, how would they be negotiated/expressed? Should a
+  versioned ALPN be used instead of the one from
+  {{RFC9289}}?
 
 --- back
 
