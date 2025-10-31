@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                                 S. Mayhew
 Intended status: Standards Track                                 Red Hat
-Expires: 11 December 2025                                  C. Lever, Ed.
+Expires: 4 May 2026                                        C. Lever, Ed.
                                                                   Oracle
-                                                             9 June 2025
+                                                         31 October 2025
 
 
                Remote Procedure Call over QUIC Version 1
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 December 2025.
+   This Internet-Draft will expire on 4 May 2026.
 
 Copyright Notice
 
@@ -76,6 +76,8 @@ Table of Contents
        3.2.1.  Transport Layer Security
      3.3.  QUIC Streams
      3.4.  RPC Message Framing
+       3.4.1.  Receiver Data Placement Assistance
+     3.5.  QUIC Load Balancing
    4.  RPC Authentication Flavors
    5.  Implementation Status
    6.  Security Considerations
@@ -211,14 +213,18 @@ Table of Contents
    each RPC XID.  Finally, a connection peer may advertise a max_streams
    value that is significantly lower than 2 ^ 60.
 
-   Instead, RPC clients may create enough streams to maximize
-   opportunities for workload parallism, and should avoid sending only a
-   few RPCs on each stream.
+   Instead, RPC clients may create enough streams to maximize workload
+   parallism, and should avoid sending only a few RPCs on each stream
+   before creating a new one.
 
    For example, an RPC client could allocate a handful of streams per
    CPU core to reduce contention for the streams and their associated
    data structures.  Or, an RPC client could create a set of streams
    whose count is the same as the number of slots in an NFSv4.1 session.
+
+   Even so, to provide a framework that makes implementing RPC-over-QUIC
+   as fast and simple as possible, this specification needs to focus on
+   enabling the use of as few as a single stream per connection.
 
    Servers that implement RPC-over-QUIC must be mindful that each
    additional stream amounts to incremental overhead.  RPC servers MAY
@@ -318,6 +324,11 @@ Table of Contents
 
       |  cel: There is an opportunity here to add a stream that acts as
       |  a control plane.
+      |  
+      |  cel: Should we limit each stream to carry only one RPC program
+      |  and version combination?  Doing so would delegate
+      |  demultiplexing of ingress RPC traffic to QUIC -- eg, NFSACL and
+      |  NFS would be required to flow over separate streams.
 
 3.4.  RPC Message Framing
 
@@ -362,35 +373,6 @@ Table of Contents
    in the RPC message in the highest order bit.  See Section 11 of
    [RFC5531] for a comparison with TCP record markers.
 
-      |  bfields: Open question whether we should do something more
-      |  complicated that adds RDMA-like features or at least provides
-      |  some minimal help with data alignment.  Possibilities might
-      |  include a single additional integer giving the offset of a
-      |  payload, serving only as a hint; or reference additional
-      |  streams in the same connection for payloads; or even looking
-      |  into full RDMA--long-term there may be interest in supporting
-      |  RDMA over QUIC, and we may be able to piggyback on that effort.
-      |  
-      |  cel: Direct data placement over TCP can already be accomplished
-      |  today using MPA/DDP protocols (formerly known as iWARP).  Using
-      |  a software iWARP implementation means no special hardware is
-      |  necessary.  Likewise, if MPA/DDP can be made to support QUIC,
-      |  much of the need for a separate RPC-over-QUIC is moot.  In
-      |  addition, it would automatically bring transport layer security
-      |  to other RDMA-enabled protocols (such as RPC-over-RDMA).
-      |  
-      |  cel: I will say however that it should be possible to create a
-      |  "chunk" abstraction (similar to RPC-over-RDMA) where the RPC-
-      |  over-QUIC protocol header identifies octet ranges of an RPC
-      |  message that are to be sent via other QUIC streams.  This would
-      |  assume that it is valid for some streams on a QUIC connection
-      |  to carry traffic that is not in the form of an RPC message
-      |  sequence.
-      |  
-      |  lars: If changes to the RPC-over-QUIC binding might be desired
-      |  in the future, how would they be negotiated/expressed?  Should
-      |  a versioned ALPN be used instead of the one from [RFC9289]?
-
       |  NFS requirement on resends: QUIC allows reconnecting using the
       |  same connection ID, so isn't breaking/reconnection somewhat
       |  ambiguous?  When can a server drop or a client resend?  Any
@@ -407,14 +389,81 @@ Table of Contents
       |  
       |  cel: We need to define a server backpressure mechanism akin to
       |  the TCP window.
-      |  
-      |  cel: Still not clear how RPC program/version discovery will
-      |  work in a world with no endpoint port numbers.
-      |  
-      |  cel: Should we limit each stream to carry only on RPC program
-      |  and version combination?  Doing so would delegate
-      |  demultiplexing of ingress RPC traffic to QUIC -- eg, NFSACL and
-      |  NFS would be required to flow over separate streams.
+
+3.4.1.  Receiver Data Placement Assistance
+
+   One recurring weakness with RPC on TCP is that large payloads (for
+   instance, in NFS WRITEs) can land at arbitrary offsets in receive
+   buffers, limiting the ability for receivers to handle the payloads
+   with zero-touch tactics such as direct I/O.
+
+   It remains an open question whether RPC-over-QUIC should implement
+   RDMA-like features or features that simply provide help with data
+   placement on receivers.  Possibilities include:
+
+   *  A single additional integer giving the offset of a payload,
+      serving only as a hint;
+
+   *  Include references to separate streams in the same connection that
+      contain opaque payloads, similar to RDMA chunks; this would
+      presume that it is valid for some streams on a QUIC connection to
+      carry traffic that is not in the form of an RPC message sequence.
+
+   Long-term there could be interest in supporting RDMA over QUIC.
+   Direct data placement over TCP can already be accomplished today
+   using MPA/DDP protocols (formerly known as iWARP; see [RFC5040]).
+   Using a software iWARP implementation means no special hardware is
+   required.
+
+   If the MPA/DDP protocols themselves can be made to operate directly
+   on QUIC transports, much of the need for a separate RPC-over-QUIC
+   becomes moot.  It would bring transport layer security to other RDMA-
+   enabled protocols, such as RPC-over-RDMA [RFC8166].
+
+3.5.  QUIC Load Balancing
+
+   Large-scale RPC deployments often distribute incoming connections
+   across multiple backend servers using load balancers.  The QUIC Load
+   Balancing specification [I-D.ietf-quic-load-balancers] defines
+   standardized methods for encoding routing information in QUIC
+   connection IDs, enabling stateless or low-state load balancing even
+   when clients migrate to new network addresses.  QUIC-LB provides
+   several advantages for RPC server pools:
+
+   *  Load balancers can route all packets for a given RPC-over-QUIC
+      connection to the same backend server by extracting the server ID
+      from the connection ID, even as the client’s network address
+      changes due to NAT rebinding or deliberate migration.
+
+   *  Because routing decisions are encoded directly in connection IDs,
+      load balancers can operate with minimal or no per-connection
+      state, improving scalability and resilience to load balancer
+      failures or restarts.
+
+   *  Since RPC-over-QUIC may use multiple streams within a single QUIC
+      connection (see Section 3.3), QUIC-LB ensures that all streams
+      within a connection are consistently routed to the same server,
+      preserving the connection-level semantics that upper-layer RPC
+      protocols may depend upon.
+
+   *  The connection ID length self-encoding feature of QUIC-LB, when
+      enabled, assists hardware cryptographic offload devices that need
+      to efficiently look up connection-specific keys, improving
+      performance in high-throughput RPC deployments.
+
+   RPC-over-QUIC implementations MAY use QUIC-LB to facilitate load
+   balancing in RPC server pool deployments.  A full specification of
+   this facility is beyond the scope of the current document.
+
+   QUIC-LB is transparent to QUIC clients.  They do not need to know
+   whether servers are using QUIC-LB encoding.  Clients simply:
+
+   *  Use server-provided connection IDs as-is
+
+   *  Respond to NEW_CONNECTION_ID frames normally
+
+   *  Perform address migration as permitted by server transport
+      parameters
 
 4.  RPC Authentication Flavors
 
@@ -509,9 +558,20 @@ Table of Contents
    SunRPC protocol entry in the "TLS Application-Layer Protocol
    Negotiation (ALPN) Protocol IDs" registry.
 
+      |  lars: If changes to the RPC-over-QUIC binding might be desired
+      |  in the future, how would they be negotiated/expressed?  Should
+      |  a versioned ALPN be used instead of the one from [RFC9289]?
+
 8.  References
 
 8.1.  Normative References
+
+   [I-D.ietf-quic-load-balancers]
+              Duke, M., Banks, N., and C. Huitema, "QUIC-LB: Generating
+              Routable QUIC Connection IDs", Work in Progress, Internet-
+              Draft, draft-ietf-quic-load-balancers-21, 27 August 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              load-balancers-21>.
 
    [IANA]     "IANA Service Name and Transport Protocol Port Number
               registry", n.d., <https://www.iana.org/assignments/
@@ -571,6 +631,11 @@ Table of Contents
    [RFC0793]  Postel, J., "Transmission Control Protocol", RFC 793,
               DOI 10.17487/RFC0793, September 1981,
               <https://www.rfc-editor.org/rfc/rfc793>.
+
+   [RFC5040]  Recio, R., Metzler, B., Culley, P., Hilland, J., and D.
+              Garcia, "A Remote Direct Memory Access Protocol
+              Specification", RFC 5040, DOI 10.17487/RFC5040, October
+              2007, <https://www.rfc-editor.org/rfc/rfc5040>.
 
    [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
               Code: The Implementation Status Section", BCP 205,

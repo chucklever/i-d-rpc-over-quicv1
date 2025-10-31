@@ -13,22 +13,21 @@
 (RPC) messages via QUIC version 1 connections. It requires no revision
 to application RPC protocols or the RPC protocol itself. 
     " name="description">
-<meta content="xml2rfc 3.28.1" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="draft-cel-nfsv4-rpc-over-quicv1-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.1
-    Python 3.12.10
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.5.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.3
-    setuptools 80.9.0
-    wcwidth 0.2.13
+    requests 2.32.5
+    wcwidth 0.2.14
 -->
 <link href="draft-cel-nfsv4-rpc-over-quicv1.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1047,11 +1046,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RPC over QUIC</td>
-<td class="right">June 2025</td>
+<td class="right">October 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Coddington, et al.</td>
-<td class="center">Expires 11 December 2025</td>
+<td class="center">Expires 4 May 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-cel-nfsv4-rpc-over-quicv1-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-09" class="published">9 June 2025</time>
+<time datetime="2025-10-31" class="published">31 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-05-04">4 May 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1128,7 +1127,7 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 4 May 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1192,6 +1191,14 @@ are on that page.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
                 <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-rpc-message-framing" class="internal xref">RPC Message Framing</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4.2.1">
+                    <p id="section-toc.1-1.3.2.4.2.1.1"><a href="#section-3.4.1" class="auto internal xref">3.4.1</a>.  <a href="#name-receiver-data-placement-ass" class="internal xref">Receiver Data Placement Assistance</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-quic-load-balancing" class="internal xref">QUIC Load Balancing</a></p>
 </li>
             </ul>
 </li>
@@ -1385,18 +1392,22 @@ stream for each RPC XID. Finally, a connection peer may
 advertise a max_streams value that is significantly lower than
 2 ^ 60.<a href="#section-3.1.1.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.1.1.2-4">Instead, RPC clients may create enough streams to maximize
-opportunities for workload parallism, and should avoid sending
-only a few RPCs on each stream.<a href="#section-3.1.1.2-4" class="pilcrow">¶</a></p>
+workload parallism, and should avoid sending only a few RPCs on
+each stream before creating a new one.<a href="#section-3.1.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-3.1.1.2-5">For example, an RPC client could allocate a handful of streams
 per CPU core to reduce contention for the streams and their
 associated data structures. Or, an RPC client could create a
 set of streams whose count is the same as the number of slots
 in an NFSv4.1 session.<a href="#section-3.1.1.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.1.1.2-6">Servers that implement RPC-over-QUIC must be mindful that each
+<p id="section-3.1.1.2-6">Even so, to provide a framework that makes implementing
+RPC-over-QUIC as fast and simple as possible, this specification
+needs to focus on enabling the use of as few as a single stream
+per connection.<a href="#section-3.1.1.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.1.1.2-7">Servers that implement RPC-over-QUIC must be mindful that each
 additional stream amounts to incremental overhead. RPC servers
 <span class="bcp14">MAY</span> deny the creation of new streams if an RPC client already
 has many active streams. RPC clients need to be prepared for
-that behavior.<a href="#section-3.1.1.2-6" class="pilcrow">¶</a></p>
+that behavior.<a href="#section-3.1.1.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="maximum-frame-size">
@@ -1482,7 +1493,7 @@ for RPC-over-QUIC.<a href="#section-3.2.1-4.4.1" class="pilcrow">¶</a></p>
 </div>
 </section>
 </div>
-<div id="quic-streams">
+<div id="sec-streams">
 <section id="section-3.3">
         <h3 id="name-quic-streams">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-quic-streams" class="section-name selfRef">QUIC Streams</a>
@@ -1508,6 +1519,10 @@ encompassing QUICv1 connection.<a href="#section-3.3-3" class="pilcrow">¶</a></
 <aside id="section-3.3-5">
           <p id="section-3.3-5.1">cel: There is an opportunity here to add a stream that acts
   as a control plane.<a href="#section-3.3-5.1" class="pilcrow">¶</a></p>
+<p id="section-3.3-5.2">cel: Should we limit each stream to carry only one RPC program and
+  version combination? Doing so would delegate demultiplexing of
+  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
+  to flow over separate streams.<a href="#section-3.3-5.2" class="pilcrow">¶</a></p>
 </aside>
 </section>
 </div>
@@ -1552,53 +1567,111 @@ bits, and a flag that indicates whether the record is the last
 record in the RPC message in the highest order bit. See
 <span><a href="https://rfc-editor.org/rfc/rfc5531#section-11" class="relref">Section 11</a> of [<a href="#RFC5531" class="cite xref">RFC5531</a>]</span> for a comparison with TCP record markers.<a href="#section-3.4-8" class="pilcrow">¶</a></p>
 <aside id="section-3.4-9">
-          <p id="section-3.4-9.1">bfields: Open question whether we should do something more
- complicated that adds RDMA-like features or at least provides some
- minimal help with data alignment.  Possibilities might include a
- single additional integer giving the offset of a payload, serving
- only as a hint; or reference additional streams in the same
- connection for payloads; or even looking into full RDMA--long-term
- there may be interest in supporting RDMA over QUIC, and we may be
- able to piggyback on that effort.<a href="#section-3.4-9.1" class="pilcrow">¶</a></p>
-<p id="section-3.4-9.2">cel: Direct data placement over TCP can already be accomplished
- today using MPA/DDP protocols (formerly known as iWARP). Using a
- software iWARP implementation means no special hardware is
- necessary. Likewise, if MPA/DDP can be made to support QUIC, much of
- the need for a separate RPC-over-QUIC is moot. In addition, it would
- automatically bring transport layer security to other RDMA-enabled
- protocols (such as RPC-over-RDMA).<a href="#section-3.4-9.2" class="pilcrow">¶</a></p>
-<p id="section-3.4-9.3">cel: I will say however that it should be possible to create a
-  "chunk" abstraction (similar to RPC-over-RDMA) where the
-  RPC-over-QUIC protocol header identifies octet ranges of an RPC
-  message that are to be sent via other QUIC streams. This would
-  assume that it is valid for some streams on a QUIC connection to
-  carry traffic that is not in the form of an RPC message sequence.<a href="#section-3.4-9.3" class="pilcrow">¶</a></p>
-<p id="section-3.4-9.4">lars: If changes to the RPC-over-QUIC binding might be desired in
-  the future, how would they be negotiated/expressed? Should a
-  versioned ALPN be used instead of the one from
-  <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>?<a href="#section-3.4-9.4" class="pilcrow">¶</a></p>
-</aside>
-<aside id="section-3.4-10">
-          <p id="section-3.4-10.1">NFS requirement on resends: QUIC allows reconnecting using the same
+          <p id="section-3.4-9.1">NFS requirement on resends: QUIC allows reconnecting using the same
  connection ID, so isn't breaking/reconnection somewhat ambiguous?
  When can a server drop or a client resend? Any advice needed for
- server-side DRC implementations?<a href="#section-3.4-10.1" class="pilcrow">¶</a></p>
-<p id="section-3.4-10.2">lars: I'm not sure I understand what is meant by "reconnecting"
+ server-side DRC implementations?<a href="#section-3.4-9.1" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.2">lars: I'm not sure I understand what is meant by "reconnecting"
   above. Is this referring to connection migration? Or a 0-RTT
-  repeated connection instance? Something else?<a href="#section-3.4-10.2" class="pilcrow">¶</a></p>
-<p id="section-3.4-10.3">lars: Also, I'm not sure if the use of streams is fully specified by
+  repeated connection instance? Something else?<a href="#section-3.4-9.2" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.3">lars: Also, I'm not sure if the use of streams is fully specified by
   the above. Is the intent here to leave it to callers to decide if
   they want to use a fresh stream for each RPC, or reuse an existing
-  stream for a series of RPCs?<a href="#section-3.4-10.3" class="pilcrow">¶</a></p>
-<p id="section-3.4-10.4">cel: We need to define a server backpressure mechanism akin to the
-  TCP window.<a href="#section-3.4-10.4" class="pilcrow">¶</a></p>
-<p id="section-3.4-10.5">cel: Still not clear how RPC program/version discovery will work
-  in a world with no endpoint port numbers.<a href="#section-3.4-10.5" class="pilcrow">¶</a></p>
-<p id="section-3.4-10.6">cel: Should we limit each stream to carry only on RPC program and
-  version combination? Doing so would delegate demultiplexing of
-  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
-  to flow over separate streams.<a href="#section-3.4-10.6" class="pilcrow">¶</a></p>
+  stream for a series of RPCs?<a href="#section-3.4-9.3" class="pilcrow">¶</a></p>
+<p id="section-3.4-9.4">cel: We need to define a server backpressure mechanism akin to the
+  TCP window.<a href="#section-3.4-9.4" class="pilcrow">¶</a></p>
 </aside>
+<div id="receiver-data-placement-assistance">
+<section id="section-3.4.1">
+          <h4 id="name-receiver-data-placement-ass">
+<a href="#section-3.4.1" class="section-number selfRef">3.4.1. </a><a href="#name-receiver-data-placement-ass" class="section-name selfRef">Receiver Data Placement Assistance</a>
+          </h4>
+<p id="section-3.4.1-1">One recurring weakness with RPC on TCP is that large payloads (for
+instance, in NFS WRITEs) can land at arbitrary offsets in receive
+buffers, limiting the ability for receivers to handle the payloads
+with zero-touch tactics such as direct I/O.<a href="#section-3.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.4.1-2">It remains an open question whether RPC-over-QUIC should implement
+RDMA-like features or features that simply provide help with data
+placement on receivers. Possibilities include:<a href="#section-3.4.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.1-3.1">
+              <p id="section-3.4.1-3.1.1">A single additional integer giving the offset of a payload, serving
+only as a hint;<a href="#section-3.4.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3.4.1-3.2">
+              <p id="section-3.4.1-3.2.1">Include references to separate streams in the same connection that
+contain opaque payloads, similar to RDMA chunks; this would presume
+that it is valid for some streams on a QUIC connection to carry
+traffic that is not in the form of an RPC message sequence.<a href="#section-3.4.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.4.1-4">Long-term there could be interest in supporting RDMA over QUIC. Direct
+data placement over TCP can already be accomplished today using MPA/DDP
+protocols (formerly known as iWARP; see <span>[<a href="#RFC5040" class="cite xref">RFC5040</a>]</span>). Using a software
+iWARP implementation means no special hardware is required.<a href="#section-3.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.4.1-5">If the MPA/DDP protocols themselves can be made to operate directly on
+QUIC transports, much of the need for a separate RPC-over-QUIC becomes
+moot. It would bring transport layer security to other RDMA-enabled
+protocols, such as RPC-over-RDMA <span>[<a href="#RFC8166" class="cite xref">RFC8166</a>]</span>.<a href="#section-3.4.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="quic-load-balancing">
+<section id="section-3.5">
+        <h3 id="name-quic-load-balancing">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-quic-load-balancing" class="section-name selfRef">QUIC Load Balancing</a>
+        </h3>
+<p id="section-3.5-1">Large-scale RPC deployments often distribute incoming connections
+across multiple backend servers using load balancers. The QUIC Load
+Balancing specification <span>[<a href="#I-D.ietf-quic-load-balancers" class="cite xref">I-D.ietf-quic-load-balancers</a>]</span> defines
+standardized methods for encoding routing information in QUIC
+connection IDs, enabling stateless or low-state load balancing even
+when clients migrate to new network addresses. QUIC-LB provides
+several advantages for RPC server pools:<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5-2.1">
+            <p id="section-3.5-2.1.1">Load balancers can route all packets for a given RPC-over-QUIC
+connection to the same backend server by extracting the server
+ID from the connection ID, even as the client’s network address
+changes due to NAT rebinding or deliberate migration.<a href="#section-3.5-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-2.2">
+            <p id="section-3.5-2.2.1">Because routing decisions are encoded directly in connection IDs,
+load balancers can operate with minimal or no per-connection
+state, improving scalability and resilience to load balancer
+failures or restarts.<a href="#section-3.5-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-2.3">
+            <p id="section-3.5-2.3.1">Since RPC-over-QUIC may use multiple streams within a single QUIC
+connection (see <a href="#sec-streams" class="auto internal xref">Section 3.3</a>), QUIC-LB ensures that all streams
+within a connection are consistently routed to the same server,
+preserving the connection-level semantics that upper-layer RPC
+protocols may depend upon.<a href="#section-3.5-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-2.4">
+            <p id="section-3.5-2.4.1">The connection ID length self-encoding feature of QUIC-LB, when
+enabled, assists hardware cryptographic offload devices that need
+to efficiently look up connection-specific keys, improving
+performance in high-throughput RPC deployments.<a href="#section-3.5-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.5-3">RPC-over-QUIC implementations <span class="bcp14">MAY</span> use QUIC-LB to facilitate load
+balancing in RPC server pool deployments. A full specification of
+this facility is beyond the scope of the current document.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<p id="section-3.5-4">QUIC-LB is transparent to QUIC clients. They do not need to know
+whether servers are using QUIC-LB encoding. Clients simply:<a href="#section-3.5-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5-5.1">
+            <p id="section-3.5-5.1.1">Use server-provided connection IDs as-is<a href="#section-3.5-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-5.2">
+            <p id="section-3.5-5.2.1">Respond to NEW_CONNECTION_ID frames normally<a href="#section-3.5-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-5.3">
+            <p id="section-3.5-5.3.1">Perform address migration as permitted by server transport parameters<a href="#section-3.5-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
@@ -1712,6 +1785,12 @@ does, as defined in <span><a href="https://rfc-editor.org/rfc/rfc9289#section-7.
 <p id="section-7.2-3">This document requests that a reference to (RFC-TBD) be added to
 the SunRPC protocol entry in the "TLS Application-Layer Protocol
 Negotiation (ALPN) Protocol IDs" registry.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<aside id="section-7.2-4">
+          <p id="section-7.2-4.1">lars: If changes to the RPC-over-QUIC binding might be desired in
+  the future, how would they be negotiated/expressed? Should a
+  versioned ALPN be used instead of the one from
+  <span>[<a href="#RFC9289" class="cite xref">RFC9289</a>]</span>?<a href="#section-7.2-4.1" class="pilcrow">¶</a></p>
+</aside>
 </section>
 </div>
 </section>
@@ -1727,6 +1806,10 @@ Negotiation (ALPN) Protocol IDs" registry.<a href="#section-7.2-3" class="pilcro
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="I-D.ietf-quic-load-balancers">[I-D.ietf-quic-load-balancers]</dt>
+        <dd>
+<span class="refAuthor">Duke, M.</span>, <span class="refAuthor">Banks, N.</span>, and <span class="refAuthor">C. Huitema</span>, <span class="refTitle">"QUIC-LB: Generating Routable QUIC Connection IDs"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-load-balancers-21</span>, <time datetime="2025-08-27" class="refDate">27 August 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-21">https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-21</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="IANA">[IANA]</dt>
         <dd>
 <span class="refTitle">"IANA Service Name and Transport Protocol Port Number registry"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt">https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt</a>&gt;</span>. </dd>
@@ -1787,6 +1870,10 @@ Negotiation (ALPN) Protocol IDs" registry.<a href="#section-7.2-3" class="pilcro
 <dt id="RFC0793">[RFC0793]</dt>
         <dd>
 <span class="refAuthor">Postel, J.</span>, <span class="refTitle">"Transmission Control Protocol"</span>, <span class="seriesInfo">RFC 793</span>, <span class="seriesInfo">DOI 10.17487/RFC0793</span>, <time datetime="1981-09" class="refDate">September 1981</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc793">https://www.rfc-editor.org/rfc/rfc793</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5040">[RFC5040]</dt>
+        <dd>
+<span class="refAuthor">Recio, R.</span>, <span class="refAuthor">Metzler, B.</span>, <span class="refAuthor">Culley, P.</span>, <span class="refAuthor">Hilland, J.</span>, and <span class="refAuthor">D. Garcia</span>, <span class="refTitle">"A Remote Direct Memory Access Protocol Specification"</span>, <span class="seriesInfo">RFC 5040</span>, <span class="seriesInfo">DOI 10.17487/RFC5040</span>, <time datetime="2007-10" class="refDate">October 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5040">https://www.rfc-editor.org/rfc/rfc5040</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7942">[RFC7942]</dt>
         <dd>
