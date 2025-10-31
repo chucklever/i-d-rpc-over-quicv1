@@ -199,14 +199,19 @@ advertise a max_streams value that is significantly lower than
 2 ^ 60.
 
 Instead, RPC clients may create enough streams to maximize
-opportunities for workload parallism, and should avoid sending
-only a few RPCs on each stream.
+workload parallism, and should avoid sending only a few RPCs on
+each stream before creating a new one.
 
 For example, an RPC client could allocate a handful of streams
 per CPU core to reduce contention for the streams and their
 associated data structures. Or, an RPC client could create a
 set of streams whose count is the same as the number of slots
 in an NFSv4.1 session.
+
+Even so, to provide a framework that makes implementing
+RPC-over-QUIC as fast and simple as possible, this specification
+needs to focus on enabling the use of as few as a single stream
+per connection.
 
 Servers that implement RPC-over-QUIC must be mindful that each
 additional stream amounts to incremental overhead. RPC servers
