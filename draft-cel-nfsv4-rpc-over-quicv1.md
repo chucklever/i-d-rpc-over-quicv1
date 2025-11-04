@@ -17,9 +17,9 @@ author:
 
 -
   name: Benjamin Coddington
-  org: Red Hat
+  org: Hammerspace
   country: United States of America
-  email: bcodding@redhat.com
+  email: bcodding@hammerspace.com
 -
   name: Scott Mayhew
   org: Red Hat
