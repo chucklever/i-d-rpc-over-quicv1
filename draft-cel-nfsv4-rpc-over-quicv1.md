@@ -470,7 +470,7 @@ to determine when an underlying transport already provides a sufficient
 degree of confidentiality.
 
 RPC-over-QUIC implementations MUST provide the "tls-exporter" channel
-binding type, as defined in {{RFC9266}}.
+binding type, as defined in {{Section 2 of RFC9266}}.
 
 # Implementation Status
 
