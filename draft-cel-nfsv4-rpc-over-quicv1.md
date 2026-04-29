@@ -251,7 +251,7 @@ program number and either the "quic" or "quic6" netid when
 requesting information about a QUIC-based RPC service. More detail
 is available in {{sec-netids}}.
 
-### Transport Layer Security
+### Transport Layer Security {#sec-tls}
 
 During connection establishment, the client peer indicates
 RPC-over-QUIC support by presenting the ALPN token "sunrpc" in
@@ -455,7 +455,7 @@ whether servers are using QUIC-LB encoding. Clients simply:
 - Respond to NEW_CONNECTION_ID frames normally
 - Perform address migration as permitted by server transport parameters
 
-# RPC Authentication Flavors
+# RPC Authentication Flavors {#sec-auth}
 
 Streams in a QUIC connection may use different RPC authentication
 flavors. One stream might use RPC_AUTH_UNIX, while at the same time,
@@ -501,8 +501,36 @@ described in this document.
 
 # Security Considerations
 
-Readers should refer to the discussion of QUIC's transport layer
-security in {{Section 21 of RFC9000}}.
+RPC-over-QUIC inherits the transport-layer security properties of
+QUIC version 1, including always-on encryption, authentication,
+and integrity protection of QUIC packets, and the connection
+migration protections discussed in {{Section 21 of RFC9000}} and
+{{Section 9 of RFC9001}}. Implementers should be familiar with
+that material.
+
+Because QUIC integrates TLS into the transport handshake, the
+peer identities established during connection establishment apply
+to every stream and RPC message carried on that connection, as
+described in {{sec-tls}}. The peer authentication, PKIX Extended
+Key Usage, and certificate-handling considerations in
+{{Section 6 of RFC9289}} apply equally to RPC-over-QUIC.
+
+When RPCSEC_GSS is used concurrently with RPC-over-QUIC, the GSS
+confidentiality and integrity services are largely redundant with
+the protection supplied by the QUIC connection. To detect this
+condition, implementations use the GSS-API channel-binding
+mechanism {{RFC5056}}, as required by {{sec-auth}}. The
+"tls-exporter" binding type {{RFC9266}} ties the GSS context to
+the specific TLS handshake of the underlying QUIC connection; a
+successful binding check confirms that the GSS context and the
+RPC traffic share the same protected channel.
+
+QUIC permits the use of 0-RTT data, which is replayable as
+described in {{Section 9.2 of RFC9001}}. RPC procedures are
+generally not idempotent, so the same replay hazard that motivates
+the 0-RTT prohibition in {{Section 6 of RFC9289}} applies to
+RPC-over-QUIC. RPC-over-QUIC implementations MUST NOT use 0-RTT
+data.
 
 # IANA Considerations
 
