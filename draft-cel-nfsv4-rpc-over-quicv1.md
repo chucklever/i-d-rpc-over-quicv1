@@ -431,45 +431,24 @@ protocols, such as RPC-over-RDMA {{RFC8166}}.
 
 ## QUIC Load Balancing
 
-Large-scale RPC deployments often distribute incoming connections
-across multiple backend servers using load balancers. The QUIC Load
-Balancing specification {{I-D.ietf-quic-load-balancers}} defines
-standardized methods for encoding routing information in QUIC
-connection IDs, enabling stateless or low-state load balancing even
-when clients migrate to new network addresses. QUIC-LB provides
-several advantages for RPC server pools:
+The QUIC Load Balancing specification
+{{I-D.ietf-quic-load-balancers}} defines methods for encoding
+routing information in QUIC connection IDs, so that a load
+balancer can route packets to a particular backend server with
+minimal per-connection state, even when a client's network
+address changes due to NAT rebinding or migration. Because
+RPC-over-QUIC may carry multiple streams over one connection
+(see {{sec-streams}}), routing at the connection-ID layer keeps
+all streams of a given connection on the same backend.
 
-- Load balancers can route all packets for a given RPC-over-QUIC
-  connection to the same backend server by extracting the server
-  ID from the connection ID, even as the client's network address
-  changes due to NAT rebinding or deliberate migration.
+The connection ID length self-encoding feature of QUIC-LB
+assists hardware cryptographic offload devices that look up
+connection-specific keys.
 
-- Because routing decisions are encoded directly in connection IDs,
-  load balancers can operate with minimal or no per-connection
-  state, improving scalability and resilience to load balancer
-  failures or restarts.
-
-- Since RPC-over-QUIC may use multiple streams within a single QUIC
-  connection (see {{sec-streams}}), QUIC-LB ensures that all streams
-  within a connection are consistently routed to the same server,
-  preserving the connection-level semantics that upper-layer RPC
-  protocols may depend upon.
-
-- The connection ID length self-encoding feature of QUIC-LB, when
-  enabled, assists hardware cryptographic offload devices that need
-  to efficiently look up connection-specific keys, improving
-  performance in high-throughput RPC deployments.
-
-RPC-over-QUIC implementations MAY use QUIC-LB to facilitate load
-balancing in RPC server pool deployments. A full specification of
-this facility is beyond the scope of the current document.
-
-QUIC-LB is transparent to QUIC clients. They do not need to know
-whether servers are using QUIC-LB encoding. Clients simply:
-
-- Use server-provided connection IDs as-is
-- Respond to NEW_CONNECTION_ID frames normally
-- Perform address migration as permitted by server transport parameters
+RPC-over-QUIC implementations MAY use QUIC-LB. A full
+specification of its use with RPC-over-QUIC is out of scope for
+this document. QUIC-LB requires no support from QUIC clients
+beyond conformance to {{RFC9000}}.
 
 # RPC Authentication Flavors {#sec-auth}
 
