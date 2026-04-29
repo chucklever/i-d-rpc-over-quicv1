@@ -301,13 +301,17 @@ QUICv1 connection has been established, either connection peer may
 create a stream. Typically, the RPC client peer creates the first
 stream on a connection.
 
-Unless explicitly specified, when RPC upper layer protocol
+Unless explicitly specified, when RPC upper-layer protocol
 specifications refer to a "connection", for RPC-over-QUIC, this
-is a QUIC stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
-operation {{RFC8881}} binds to a QUICv1 stream. As another example,
-to signify the loss of an RPC request, an NFS server closes the
-QUICv1 stream that received that request, but it does not close the
-encompassing QUICv1 connection.
+is a QUIC stream. For instance, when NFSv4.1 layered on
+RPC-over-QUIC uses BIND_CONN_TO_SESSION {{RFC8881}} to associate
+a "connection" with a session, the bound entity is a QUICv1
+stream rather than the encompassing QUICv1 connection.
+
+A peer that closes a QUICv1 stream signals that any RPC request
+still in flight on that stream is to be treated as lost. Closing
+a stream does not affect the encompassing QUICv1 connection or
+any other stream within it.
 
 In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 "tpi_cots_ord" transport: connection-oriented and in order.
