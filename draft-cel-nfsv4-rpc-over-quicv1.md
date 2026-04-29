@@ -132,7 +132,7 @@ QUIC transports:
 # RPC-over-QUIC Framework
 
 RPC is first and foremost a message-passing protocol. This section
-covers the implementaion details of exchanging RPC messages over
+covers the implementation details of exchanging RPC messages over
 QUIC. Readers should already be familiar with the fundamentals
 of ONC RPC {{RFC5531}}.
 
@@ -200,7 +200,7 @@ advertise a max_streams value that is significantly lower than
 2 ^ 60.
 
 Instead, RPC clients may create enough streams to maximize
-workload parallism, and should avoid sending only a few RPCs on
+workload parallelism, and should avoid sending only a few RPCs on
 each stream before creating a new one.
 
 For example, an RPC client could allocate a handful of streams
@@ -284,7 +284,7 @@ RPC-over-QUIC inherently fulfills many of the requirements of
 - The PKIX Extended Key Usage values defined in {{RFC9289}} are
   valid for use with RPC-over-QUIC.
 
-- The ALPN defined in {{Section 8.2 of RFC9289}} is also used
+- The ALPN defined in {{Section 7.2 of RFC9289}} is also used
   for RPC-over-QUIC.
 
 ## QUIC Streams {#sec-streams}
@@ -306,7 +306,7 @@ specifications refer to a "connection", for RPC-over-QUIC, this
 is a QUIC stream. As an example, an NFSv4.1 BIND_CONN_TO_SESSION
 operation {{RFC8881}} binds to a QUICv1 stream. As another example,
 to signify the loss of an RPC request, an NFS server closes the
-QUICv1 stream that received that request, but it does close not the
+QUICv1 stream that received that request, but it does not close the
 encompassing QUICv1 connection.
 
 In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
@@ -350,7 +350,7 @@ out-of-order delivery within a stream, RPC-over-QUIC does not make
 use of this feature.
 
 Because each QUICv1 stream is an ordered-byte stream, an
-RPC-with-QUIC stream carries only a sequence of complete RPC
+RPC-over-QUIC stream carries only a sequence of complete RPC
 messages. Although data from multiple streams can be interleaved
 on a single QUICv1 connection, RPC messages MUST NOT be interleaved
 on one stream.
@@ -425,7 +425,7 @@ several advantages for RPC server pools:
 
 - Load balancers can route all packets for a given RPC-over-QUIC
   connection to the same backend server by extracting the server
-  ID from the connection ID, even as the client’s network address
+  ID from the connection ID, even as the client's network address
   changes due to NAT rebinding or deliberate migration.
 
 - Because routing decisions are encoded directly in connection IDs,
