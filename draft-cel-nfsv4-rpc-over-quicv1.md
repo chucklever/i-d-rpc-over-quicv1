@@ -42,7 +42,6 @@ normative:
   RFC9001:
   RFC9266:
   RFC9289:
-  I-D.ietf-quic-load-balancers:
   IANA:
     target: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
     title: IANA Service Name and Transport Protocol Port Number registry
@@ -54,6 +53,7 @@ informative:
   RFC7942:
   RFC8166:
   RFC8881:
+  I-D.ietf-quic-load-balancers:
 
 --- abstract
 
