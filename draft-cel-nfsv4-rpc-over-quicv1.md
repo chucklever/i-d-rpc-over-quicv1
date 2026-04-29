@@ -335,7 +335,12 @@ Call messages on that stream.
 The other endpoint is referred to as a "Responder", and MUST emit
 only RPC Reply messages on that stream.
 Receivers MUST silently discard RPC messages whose direction field
-does not match its Requester/Responder role.
+does not match their Requester or Responder role. A receiver MAY
+also signal the violation to the peer by closing the offending
+stream with a RESET_STREAM frame ({{Section 19.4 of RFC9000}})
+carrying an application error code; specific error code values
+and an extension process for defining additional codes are left
+to a future revision of this specification.
 
 Requesters and Responders match RPC Calls to RPC Replies using
 the XID carried in each RPC message. Responders MUST send RPC
@@ -387,6 +392,13 @@ record in the RPC message in the highest order bit. See
 >
 > cel: We need to define a server backpressure mechanism akin to the
   TCP window.
+>
+> cel: An extension process for defining RPC-over-QUIC application
+  error codes (used with RESET_STREAM and CONNECTION_CLOSE frames)
+  needs to be specified, likely with an IANA registry. Initial
+  code points are needed for at least protocol-violation
+  signaling, server backpressure, and server-initiated request
+  drop.
 
 ### Receiver Data Placement Assistance
 
