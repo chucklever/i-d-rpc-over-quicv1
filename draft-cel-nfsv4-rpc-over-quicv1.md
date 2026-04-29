@@ -182,7 +182,7 @@ peers, and are not exposed to RPC applications.
 
 #### Number of Streams Per Connection
 
-Each QUICv1 peer may limit the number of streams per
+Each QUICv1 peer can limit the number of streams per
 connection; see {{Section 4.6 of RFC9000}}.
 
 Given the definition of RPC message framing in {{sec-framing}},
@@ -195,13 +195,13 @@ For protocols that carry a more intensive workload, this style of
 stream allocation generates needless overhead. Moreover, stream
 identifiers cannot be re-used on a single QUICv1 connection,
 so eventually a QUICv1 connection can no longer create a new
-stream for each RPC XID. Finally, a connection peer may
+stream for each RPC XID. Finally, a connection peer can
 advertise a max_streams value that is significantly lower than
 2 ^ 60.
 
-Instead, RPC clients may create enough streams to maximize
-workload parallelism, and should avoid sending only a few RPCs on
-each stream before creating a new one.
+Instead, RPC clients can create enough streams to maximize
+workload parallelism, and ought to avoid sending only a few RPCs
+on each stream before creating a new one.
 
 For example, an RPC client could allocate a handful of streams
 per CPU core to reduce contention for the streams and their
@@ -214,7 +214,7 @@ RPC-over-QUIC as fast and simple as possible, this specification
 needs to focus on enabling the use of as few as a single stream
 per connection.
 
-Servers that implement RPC-over-QUIC must be mindful that each
+Servers that implement RPC-over-QUIC need to recognize that each
 additional stream amounts to incremental overhead. RPC servers
 MAY deny the creation of new streams if an RPC client already
 has many active streams. RPC clients need to be prepared for
