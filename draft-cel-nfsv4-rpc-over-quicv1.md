@@ -390,13 +390,6 @@ record in the RPC message in the highest order bit. See
 >
 > cel: We need to define a server backpressure mechanism akin to the
   TCP window.
->
-> cel: An extension process for defining RPC-over-QUIC application
-  error codes (used with RESET_STREAM and CONNECTION_CLOSE frames)
-  needs to be specified, likely with an IANA registry. Initial
-  code points are needed for at least protocol-violation
-  signaling, server backpressure, and server-initiated request
-  drop.
 
 ### Receiver Data Placement Assistance
 
@@ -426,6 +419,33 @@ If the MPA/DDP protocols themselves can be made to operate directly on
 QUIC transports, much of the need for a separate RPC-over-QUIC becomes
 moot. It would bring transport layer security to other RDMA-enabled
 protocols, such as RPC-over-RDMA {{RFC8166}}.
+
+## Application Error Codes  {#sec-errcodes}
+
+Receivers signal certain stream- or connection-level conditions
+by closing the affected stream or connection with a QUICv1
+application error code, conveyed in a RESET_STREAM
+({{Section 19.4 of RFC9000}}) or CONNECTION_CLOSE
+({{Section 19.19 of RFC9000}}) frame. RPC-over-QUIC defines a
+set of named application error codes for this purpose; numeric
+values are TBD.
+
+PROTOCOL_VIOLATION
+: Signaled by a peer that has detected a violation of this
+specification, such as an RPC message whose direction field
+does not match the receiver's Requester or Responder role.
+
+SERVER_BUSY
+: Signaled by a Responder that is unable to accept additional
+RPC traffic at this time. Used as the backpressure indication
+for RPC-over-QUIC.
+
+REQUEST_DROPPED
+: Signaled by a Responder that has discarded an RPC Call before
+generating an RPC Reply.
+
+Additional code points are allocated through the registry
+described in {{sec-iana-errcodes}}.
 
 ## QUIC Load Balancing
 
@@ -582,6 +602,23 @@ Negotiation (ALPN) Protocol IDs" registry.
   the future, how would they be negotiated/expressed? Should a
   versioned ALPN be used instead of the one from
   {{RFC9289}}?
+
+## RPC-over-QUIC Application Error Codes Registry  {#sec-iana-errcodes}
+
+This document requests that IANA establish a new registry titled
+"RPC-over-QUIC Application Error Codes". The allocation policy
+for this registry is to be specified by a future revision of
+this document.
+
+Each registry entry comprises a numeric code point, a symbolic
+name, and a reference to a stable specification defining the
+semantics of the code. Initial entries are:
+
+| Code | Name               | Reference |
+|------|--------------------|-----------|
+| TBD  | PROTOCOL_VIOLATION | (RFC-TBD) |
+| TBD  | SERVER_BUSY        | (RFC-TBD) |
+| TBD  | REQUEST_DROPPED    | (RFC-TBD) |
 
 --- back
 
