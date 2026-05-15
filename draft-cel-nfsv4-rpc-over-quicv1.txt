@@ -5,10 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                               Hammerspace
 Intended status: Standards Track                               S. Mayhew
-Expires: 31 October 2026                                         Red Hat
+Expires: 16 November 2026                                        Red Hat
                                                            C. Lever, Ed.
-                                                                  Oracle
-                                                           29 April 2026
+                                                             15 May 2026
 
 
                Remote Procedure Call over QUIC Version 1
@@ -49,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 October 2026.
+   This Internet-Draft will expire on 16 November 2026.
 
 Copyright Notice
 
@@ -78,17 +77,20 @@ Table of Contents
      3.3.  QUIC Streams
      3.4.  RPC Message Framing
        3.4.1.  Receiver Data Placement Assistance
-     3.5.  QUIC Load Balancing
+     3.5.  Application Error Codes
+     3.6.  QUIC Load Balancing
    4.  RPC Authentication Flavors
    5.  Implementation Status
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  Netids for RPC-over-QUIC
      7.2.  ALPN Identifier for SunRPC on QUIC
+     7.3.  RPC-over-QUIC Application Error Codes Registry
    8.  References
      8.1.  Normative References
      8.2.  Informative References
    Acknowledgments
+   Open Issues
    Authors' Addresses
 
 1.  Introduction
@@ -102,7 +104,7 @@ Table of Contents
    Open Network Computing Remote Procedure Call (often shortened to
    "RPC") is a Remote Procedure Call protocol that runs over a variety
    of network transports [RFC5531].  RPC implementations so far use UDP
-   [RFC0768], TCP [RFC0793], or RDMA [RFC8166].  This document specifies
+   [RFC0768], TCP [RFC9293], or RDMA [RFC8166].  This document specifies
    how to transport RPC messages over QUIC version 1.
 
 1.1.  Motivation For a New RPC Transport
@@ -327,14 +329,6 @@ Table of Contents
    In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
    "tpi_cots_ord" transport: connection-oriented and in order.
 
-      |  cel: There is an opportunity here to add a stream that acts as
-      |  a control plane.
-      |  
-      |  cel: Should we limit each stream to carry only one RPC program
-      |  and version combination?  Doing so would delegate
-      |  demultiplexing of ingress RPC traffic to QUIC -- eg, NFSACL and
-      |  NFS would be required to flow over separate streams.
-
 3.4.  RPC Message Framing
 
    RPC-over-QUIC uses only bidirectional streams.
@@ -383,30 +377,6 @@ Table of Contents
    in the RPC message in the highest order bit.  See Section 11 of
    [RFC5531] for a comparison with TCP record markers.
 
-      |  NFS requirement on resends: QUIC allows reconnecting using the
-      |  same connection ID, so isn't breaking/reconnection somewhat
-      |  ambiguous?  When can a server drop or a client resend?  Any
-      |  advice needed for server-side DRC implementations?
-      |  
-      |  lars: I'm not sure I understand what is meant by "reconnecting"
-      |  above.  Is this referring to connection migration?  Or a 0-RTT
-      |  repeated connection instance?  Something else?
-      |  
-      |  lars: Also, I'm not sure if the use of streams is fully
-      |  specified by the above.  Is the intent here to leave it to
-      |  callers to decide if they want to use a fresh stream for each
-      |  RPC, or reuse an existing stream for a series of RPCs?
-      |  
-      |  cel: We need to define a server backpressure mechanism akin to
-      |  the TCP window.
-      |  
-      |  cel: An extension process for defining RPC-over-QUIC
-      |  application error codes (used with RESET_STREAM and
-      |  CONNECTION_CLOSE frames) needs to be specified, likely with an
-      |  IANA registry.  Initial code points are needed for at least
-      |  protocol-violation signaling, server backpressure, and server-
-      |  initiated request drop.
-
 3.4.1.  Receiver Data Placement Assistance
 
    One recurring weakness with RPC on TCP is that large payloads (for
@@ -437,16 +407,44 @@ Table of Contents
    becomes moot.  It would bring transport layer security to other RDMA-
    enabled protocols, such as RPC-over-RDMA [RFC8166].
 
-3.5.  QUIC Load Balancing
+3.5.  Application Error Codes
 
-   The QUIC Load Balancing specification [I-D.ietf-quic-load-balancers]
-   defines methods for encoding routing information in QUIC connection
-   IDs, so that a load balancer can route packets to a particular
-   backend server with minimal per-connection state, even when a
-   client's network address changes due to NAT rebinding or migration.
-   Because RPC-over-QUIC may carry multiple streams over one connection
-   (see Section 3.3), routing at the connection-ID layer keeps all
-   streams of a given connection on the same backend.
+   Receivers signal certain stream- or connection-level conditions by
+   closing the affected stream or connection with a QUICv1 application
+   error code, conveyed in a RESET_STREAM (Section 19.4 of [RFC9000]) or
+   CONNECTION_CLOSE (Section 19.19 of [RFC9000]) frame.  RPC-over-QUIC
+   defines a set of named application error codes for this purpose;
+   numeric values are TBD.
+
+   PROTOCOL_VIOLATION  Signaled by a peer that has detected a violation
+      of this specification, such as an RPC message whose direction
+      field does not match the receiver's Requester or Responder role.
+
+   SERVER_BUSY  Signaled by a Responder that is unable to accept
+      additional RPC traffic at this time.  Used as the backpressure
+      indication for RPC-over-QUIC.
+
+   REQUEST_DROPPED  Signaled by a Responder that has discarded an RPC
+      Call before generating an RPC Reply.
+
+   Additional code points are allocated through the registry described
+   in Section 7.3.
+
+3.6.  QUIC Load Balancing
+
+   The discussion in this section is preliminary.  A complete
+   specification of how load balancing applies to RPC-over-QUICv1 is
+   left to a future revision of this document.
+
+   The QUIC Load Balancing specification
+   [I-D.ietf-quic-load-balancers-21] defines methods for encoding
+   routing information in QUIC connection IDs, so that a load balancer
+   can route packets to a particular backend server with minimal per-
+   connection state, even when a client's network address changes due to
+   NAT rebinding or migration.  Because RPC-over-QUIC may carry multiple
+   streams over one connection (see Section 3.3), routing at the
+   connection-ID layer keeps all streams of a given connection on the
+   same backend.
 
    The connection ID length self-encoding feature of QUIC-LB assists
    hardware cryptographic offload devices that look up connection-
@@ -557,13 +555,6 @@ Table of Contents
    and "quic6" for IPv6 addressing.  IANA should use this document (RFC-
    TBD) as the reference for the new entries.
 
-      |  lars: Why one per IP address family?  This seems common
-      |  practice with netids, but also seems to be a layering
-      |  violation?
-      |  
-      |  cel: That question might be out of scope for this document.
-      |  netids very nearly amount to technical debt at this point.
-
 7.2.  ALPN Identifier for SunRPC on QUIC
 
    RPC-over-QUIC utilizes the same ALPN string as RPC-with-TLS does, as
@@ -575,9 +566,28 @@ Table of Contents
    SunRPC protocol entry in the "TLS Application-Layer Protocol
    Negotiation (ALPN) Protocol IDs" registry.
 
-      |  lars: If changes to the RPC-over-QUIC binding might be desired
-      |  in the future, how would they be negotiated/expressed?  Should
-      |  a versioned ALPN be used instead of the one from [RFC9289]?
+7.3.  RPC-over-QUIC Application Error Codes Registry
+
+   This document requests that IANA establish a new registry titled
+   "RPC-over-QUIC Application Error Codes".  The allocation policy for
+   this registry is to be specified by a future revision of this
+   document.
+
+   Each registry entry comprises a numeric code point, a symbolic name,
+   and a reference to a stable specification defining the semantics of
+   the code.  Initial entries are:
+
+                 +======+====================+===========+
+                 | Code | Name               | Reference |
+                 +======+====================+===========+
+                 | TBD  | PROTOCOL_VIOLATION | (RFC-TBD) |
+                 +------+--------------------+-----------+
+                 | TBD  | SERVER_BUSY        | (RFC-TBD) |
+                 +------+--------------------+-----------+
+                 | TBD  | REQUEST_DROPPED    | (RFC-TBD) |
+                 +------+--------------------+-----------+
+
+                                  Table 1
 
 8.  References
 
@@ -634,7 +644,7 @@ Table of Contents
 
 8.2.  Informative References
 
-   [I-D.ietf-quic-load-balancers]
+   [I-D.ietf-quic-load-balancers-21]
               Duke, M., Banks, N., and C. Huitema, "QUIC-LB: Generating
               Routable QUIC Connection IDs", Work in Progress, Internet-
               Draft, draft-ietf-quic-load-balancers-21, 27 August 2025,
@@ -644,10 +654,6 @@ Table of Contents
    [RFC0768]  Postel, J., "User Datagram Protocol", STD 6, RFC 768,
               DOI 10.17487/RFC0768, August 1980,
               <https://www.rfc-editor.org/rfc/rfc768>.
-
-   [RFC0793]  Postel, J., "Transmission Control Protocol", RFC 793,
-              DOI 10.17487/RFC0793, September 1981,
-              <https://www.rfc-editor.org/rfc/rfc793>.
 
    [RFC5040]  Recio, R., Metzler, B., Culley, P., Hilland, J., and D.
               Garcia, "A Remote Direct Memory Access Protocol
@@ -669,6 +675,10 @@ Table of Contents
               DOI 10.17487/RFC8881, August 2020,
               <https://www.rfc-editor.org/rfc/rfc8881>.
 
+   [RFC9293]  Eddy, W., Ed., "Transmission Control Protocol (TCP)",
+              STD 7, RFC 9293, DOI 10.17487/RFC9293, August 2022,
+              <https://www.rfc-editor.org/rfc/rfc9293>.
+
 Acknowledgments
 
    The authors express their deepest appreciation for the contributions
@@ -683,6 +693,37 @@ Acknowledgments
    Special thanks to Area Director Gorry Fairhurst, NFSV4 Working Group
    Chairs Brian Pawlowski and Christopher Inacio, and NFSV4 Working
    Group Secretary Thomas Haynes for their guidance and oversight.
+
+Open Issues
+
+   This appendix is to be removed before publishing as an RFC.
+
+   Open design questions identified during the development of this
+   document are tracked as issues in https://github.com/chucklever/i-d-
+   rpc-over-quicv1/issues.  Each item below links the affected section
+   to the GitHub issue that captures the question.
+
+   *  Section 3.3: #7 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/7) - Stream as a control plane for RPC-over-QUIC
+
+   *  Section 3.3: #8 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/8) - Should each stream carry only one RPC program/
+      version combination?
+
+   *  Section 3.4: #9 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/9) - Stream lifecycle: reconnection, resend
+      semantics, and stream reuse
+
+   *  Section 3.4: #10 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/10) - Server backpressure mechanism for RPC-over-
+      QUIC
+
+   *  Section 7.1: #11 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/11) - Why register a netid per IP address family?
+
+   *  Section 7.2: #12 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/12) - Versioning of the RPC-over-QUIC ALPN
+      identifier
 
 Authors' Addresses
 
@@ -699,6 +740,5 @@ Authors' Addresses
 
 
    Charles Lever (editor)
-   Oracle Corporation
    United States of America
-   Email: chuck.lever@oracle.com
+   Email: cel-ietf@chucklever.net
