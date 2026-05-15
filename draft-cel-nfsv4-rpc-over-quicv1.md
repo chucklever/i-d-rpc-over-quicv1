@@ -314,15 +314,6 @@ any other stream within it.
 In terms of TI-RPC semantic labels, a QUICv1 stream behaves as a
 "tpi_cots_ord" transport: connection-oriented and in order.
 
-{:aside}
-> cel: There is an opportunity here to add a stream that acts
-  as a control plane.
->
-> cel: Should we limit each stream to carry only one RPC program and
-  version combination? Doing so would delegate demultiplexing of
-  ingress RPC traffic to QUIC -- eg, NFSACL and NFS would be required
-  to flow over separate streams.
-
 ## RPC Message Framing {#sec-framing}
 
 RPC-over-QUIC uses only bidirectional streams.
@@ -372,24 +363,6 @@ marker contains the count of octets in the record in its lower 31
 bits, and a flag that indicates whether the record is the last
 record in the RPC message in the highest order bit. See
 {{Section 11 of RFC5531}} for a comparison with TCP record markers.
-
-{:aside}
->NFS requirement on resends: QUIC allows reconnecting using the same
- connection ID, so isn't breaking/reconnection somewhat ambiguous?
- When can a server drop or a client resend? Any advice needed for
- server-side DRC implementations?
->
-> lars: I'm not sure I understand what is meant by "reconnecting"
-  above. Is this referring to connection migration? Or a 0-RTT
-  repeated connection instance? Something else?
->
-> lars: Also, I'm not sure if the use of streams is fully specified by
-  the above. Is the intent here to leave it to callers to decide if
-  they want to use a fresh stream for each RPC, or reuse an existing
-  stream for a series of RPCs?
->
-> cel: We need to define a server backpressure mechanism akin to the
-  TCP window.
 
 ### Receiver Data Placement Assistance
 
@@ -577,14 +550,7 @@ to be used when IPv4 addressing is employed by the underlying
 transport, and "quic6" for IPv6 addressing. IANA should use this
 document (RFC-TBD) as the reference for the new entries.
 
-{:aside}
-> lars: Why one per IP address family? This seems common practice with
-  netids, but also seems to be a layering violation?
->
-> cel: That question might be out of scope for this document.
-  netids very nearly amount to technical debt at this point.
-
-## ALPN Identifier for SunRPC on QUIC
+## ALPN Identifier for SunRPC on QUIC  {#sec-alpn}
 
 RPC-over-QUIC utilizes the same ALPN string as RPC-with-TLS
 does, as defined in {{Section 7.2 of RFC9289}}:
@@ -596,12 +562,6 @@ does, as defined in {{Section 7.2 of RFC9289}}:
 This document requests that a reference to (RFC-TBD) be added to
 the SunRPC protocol entry in the "TLS Application-Layer Protocol
 Negotiation (ALPN) Protocol IDs" registry.
-
-{:aside}
-> lars: If changes to the RPC-over-QUIC binding might be desired in
-  the future, how would they be negotiated/expressed? Should a
-  versioned ALPN be used instead of the one from
-  {{RFC9289}}?
 
 ## RPC-over-QUIC Application Error Codes Registry  {#sec-iana-errcodes}
 
@@ -652,3 +612,21 @@ and
 NFSV4 Working Group Secretary
 Thomas Haynes
 for their guidance and oversight.
+
+# Open Issues
+{: numbered="no"}
+
+This appendix is to be removed before publishing as an RFC.
+
+Open design questions identified during the development of this
+document are tracked as issues in
+[](https://github.com/chucklever/i-d-rpc-over-quicv1/issues).
+Each item below links the affected section to the GitHub issue
+that captures the question.
+
+* {{sec-streams}}: [#7](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/7) - Stream as a control plane for RPC-over-QUIC
+* {{sec-streams}}: [#8](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/8) - Should each stream carry only one RPC program/version combination?
+* {{sec-framing}}: [#9](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/9) - Stream lifecycle: reconnection, resend semantics, and stream reuse
+* {{sec-framing}}: [#10](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/10) - Server backpressure mechanism for RPC-over-QUIC
+* {{sec-netids}}: [#11](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/11) - Why register a netid per IP address family?
+* {{sec-alpn}}: [#12](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/12) - Versioning of the RPC-over-QUIC ALPN identifier
