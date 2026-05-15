@@ -46,7 +46,7 @@ normative:
 
 informative:
   RFC0768:
-  RFC0793:
+  RFC9293:
   RFC5040:
   RFC7942:
   RFC8166:
@@ -86,7 +86,7 @@ and congestion avoidance mechanisms.
 Open Network Computing Remote Procedure Call (often shortened to "RPC")
 is a Remote Procedure Call protocol that runs over a variety of network
 transports {{RFC5531}}. RPC implementations so far use UDP {{RFC0768}},
-TCP {{RFC0793}}, or RDMA {{RFC8166}}. This document specifies how to
+TCP {{RFC9293}}, or RDMA {{RFC8166}}. This document specifies how to
 transport RPC messages over QUIC version 1.
 
 ## Motivation For a New RPC Transport
