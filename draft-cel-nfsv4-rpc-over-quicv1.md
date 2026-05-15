@@ -51,7 +51,7 @@ informative:
   RFC7942:
   RFC8166:
   RFC8881:
-  I-D.ietf-quic-load-balancers:
+  I-D.ietf-quic-load-balancers-21:
 
 --- abstract
 
@@ -429,8 +429,12 @@ protocols, such as RPC-over-RDMA {{RFC8166}}.
 
 ## QUIC Load Balancing
 
+The discussion in this section is preliminary. A complete
+specification of how load balancing applies to RPC-over-QUICv1
+is left to a future revision of this document.
+
 The QUIC Load Balancing specification
-{{I-D.ietf-quic-load-balancers}} defines methods for encoding
+{{I-D.ietf-quic-load-balancers-21}} defines methods for encoding
 routing information in QUIC connection IDs, so that a load
 balancer can route packets to a particular backend server with
 minimal per-connection state, even when a client's network
