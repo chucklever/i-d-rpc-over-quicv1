@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-14T01:55:45.756903+00:00",
+  "timestamp": "2026-05-17T01:51:32.968637+00:00",
   "repo": "chucklever/i-d-rpc-over-quicv1",
   "labels": [
     {
@@ -49,7 +49,104 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 7,
+      "id": "I_kwDOF4Efbc8AAAABCZECDA",
+      "title": "Stream as a control plane for RPC-over-QUIC",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/7",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 3.3 (QUIC Streams) notes that QUIC's stream abstraction creates an opportunity to designate one stream as a control plane carrying out-of-band management messages rather than RPC traffic. The spec does not currently use this capability. This issue captures whether a control-plane stream should be defined, what messages it would carry, and how peers would discover one.\n\n*Origin: aside in \u00a73.3 of draft-cel-nfsv4-rpc-over-quicv1; raised by Chuck Lever.*\n",
+      "createdAt": "2026-05-15T16:37:02Z",
+      "updatedAt": "2026-05-15T16:37:02Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOF4Efbc8AAAABCZECUQ",
+      "title": "Should each stream carry only one RPC program/version combination?",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/8",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 3.3 leaves open whether a single QUIC stream may carry multiple RPC program/version combinations or whether each stream is restricted to one. Restricting to one would delegate program/version demultiplexing of ingress traffic to the QUIC layer (for example, NFSACL and NFS would each require their own stream). This issue captures the tradeoff and the decision.\n\n*Origin: aside in \u00a73.3 of draft-cel-nfsv4-rpc-over-quicv1; raised by Chuck Lever.*\n",
+      "createdAt": "2026-05-15T16:37:03Z",
+      "updatedAt": "2026-05-15T16:37:03Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOF4Efbc8AAAABCZECjA",
+      "title": "Stream lifecycle: reconnection, resend semantics, and stream reuse",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/9",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 3.4 (RPC Message Framing) describes RPC record framing but leaves several stream-lifecycle questions unsettled:\n\n1. QUIC permits reconnecting with the same connection ID and connection migration across paths. When may a server drop an in-flight request and when may a client resend? Is any advice needed for server-side DRC implementations? (Lars: which of connection migration, 0-RTT repeated connection, or something else is meant by \"reconnecting\"?)\n2. Are callers expected to open a fresh stream per RPC, or to reuse one stream for a series of RPCs? Should the spec require one of these patterns?\n\n*Origin: aside in \u00a73.4 of draft-cel-nfsv4-rpc-over-quicv1; opening question carried over from the pre-2021 source (original raiser not recorded); follow-up clarifications by Lars Eggert.*\n",
+      "createdAt": "2026-05-15T16:37:04Z",
+      "updatedAt": "2026-05-15T16:37:04Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOF4Efbc8AAAABCZEC2A",
+      "title": "Server backpressure mechanism for RPC-over-QUIC",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/10",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "RPC-over-QUIC needs a flow-control / backpressure mechanism analogous to the TCP receive window so that responders can signal when they cannot accept additional load. SERVER_BUSY (defined in \u00a73.5) provides a coarse \"no more right now\" signal but is not a window-like mechanism. This issue captures whether a window-like mechanism is required and, if so, how it is conveyed.\n\n*Origin: aside in \u00a73.4 of draft-cel-nfsv4-rpc-over-quicv1; raised by Chuck Lever.*\n",
+      "createdAt": "2026-05-15T16:37:04Z",
+      "updatedAt": "2026-05-15T16:37:04Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOF4Efbc8AAAABCZEDtQ",
+      "title": "Why register a netid per IP address family?",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/11",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 7.1 requests two netids (\"quic\" for IPv4, \"quic6\" for IPv6). This follows existing netid practice but appears to be a layering violation: the netid encodes both transport and address family. Is the per-AF split justified for RPC-over-QUIC, or should a single netid be used and the address family conveyed separately?\n\n*Origin: aside in \u00a77.1 of draft-cel-nfsv4-rpc-over-quicv1; raised by Lars Eggert (with response by Chuck Lever noting that netids are arguably technical debt at this point).*\n",
+      "createdAt": "2026-05-15T16:37:05Z",
+      "updatedAt": "2026-05-15T16:37:05Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOF4Efbc8AAAABCZED9Q",
+      "title": "Versioning of the RPC-over-QUIC ALPN identifier",
+      "url": "https://github.com/chucklever/i-d-rpc-over-quicv1/issues/12",
+      "state": "OPEN",
+      "author": "chucklever",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 7.2 reuses the \"sunrpc\" ALPN string from RFC 9289 for RPC-over-QUIC. If future revisions of the RPC-over-QUIC binding need to be distinguished on the wire, how would that be negotiated? Should the binding use a versioned ALPN identifier rather than reusing the unversioned RFC 9289 string?\n\n*Origin: aside in \u00a77.2 of draft-cel-nfsv4-rpc-over-quicv1; raised by Lars Eggert.*\n",
+      "createdAt": "2026-05-15T16:37:06Z",
+      "updatedAt": "2026-05-15T16:37:06Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": [
     {
       "number": 1,
