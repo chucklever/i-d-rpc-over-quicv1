@@ -405,12 +405,20 @@ application error code, conveyed in a RESET_STREAM
 ({{Section 19.19 of RFC9000}}) frame. RPC-over-QUIC defines the
 following application error codes for this purpose. Their numeric
 values are recorded in the registry described in
-{{sec-iana-errcodes}}.
+{{sec-iana-errcodes}}. Because those frames carry an application
+error code even when a stream or connection is closed for an
+unremarkable reason, a code is defined for that case as well.
 
 Application error codes occupy a separate space from the QUIC
 transport error codes defined in {{Section 20.1 of RFC9000}}. The
 names below carry an "RPC_" prefix to keep the two distinct when
 a code appears in a packet trace or a diagnostic log.
+
+RPC_NO_ERROR
+: Signaled by a peer that is closing a stream or connection
+under normal conditions, with no error to report. A peer that
+closes a stream or connection for a reason this specification
+does not otherwise assign a code to MUST use RPC_NO_ERROR.
 
 RPC_PROTOCOL_VIOLATION
 : Signaled by a peer that has detected a violation of this
@@ -670,6 +678,7 @@ Specification:
 
 | Value | Error              | Description                                   |
 |-------|--------------------|-----------------------------------------------|
+| 0x0   | RPC_NO_ERROR       | No error                                      |
 | 0x1   | RPC_PROTOCOL_VIOLATION | A violation of this specification was detected |
 | 0x2   | RPC_SERVER_BUSY | The Responder cannot accept additional RPC traffic |
 | 0x3   | RPC_REQUEST_DROPPED | An RPC Call was discarded without a Reply     |
