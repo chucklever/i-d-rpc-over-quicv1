@@ -426,8 +426,7 @@ does not match the receiver's Requester or Responder role.
 
 RPC_SERVER_BUSY
 : Signaled by a Responder that is unable to accept additional
-RPC traffic at this time. Used as the backpressure indication
-for RPC-over-QUIC.
+RPC traffic at this time.
 
 RPC_REQUEST_DROPPED
 : Signaled by a Responder that has discarded an RPC Call before
