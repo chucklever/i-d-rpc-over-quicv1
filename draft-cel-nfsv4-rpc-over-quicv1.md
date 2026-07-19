@@ -407,17 +407,22 @@ following application error codes for this purpose. Their numeric
 values are recorded in the registry described in
 {{sec-iana-errcodes}}.
 
-PROTOCOL_VIOLATION
+Application error codes occupy a separate space from the QUIC
+transport error codes defined in {{Section 20.1 of RFC9000}}. The
+names below carry an "RPC_" prefix to keep the two distinct when
+a code appears in a packet trace or a diagnostic log.
+
+RPC_PROTOCOL_VIOLATION
 : Signaled by a peer that has detected a violation of this
 specification, such as an RPC message whose direction field
 does not match the receiver's Requester or Responder role.
 
-SERVER_BUSY
+RPC_SERVER_BUSY
 : Signaled by a Responder that is unable to accept additional
 RPC traffic at this time. Used as the backpressure indication
 for RPC-over-QUIC.
 
-REQUEST_DROPPED
+RPC_REQUEST_DROPPED
 : Signaled by a Responder that has discarded an RPC Call before
 generating an RPC Reply.
 
@@ -665,9 +670,9 @@ Specification:
 
 | Value | Error              | Description                                   |
 |-------|--------------------|-----------------------------------------------|
-| 0x1   | PROTOCOL_VIOLATION | A violation of this specification was detected |
-| 0x2   | SERVER_BUSY        | The Responder cannot accept additional RPC traffic |
-| 0x3   | REQUEST_DROPPED    | An RPC Call was discarded without a Reply     |
+| 0x1   | RPC_PROTOCOL_VIOLATION | A violation of this specification was detected |
+| 0x2   | RPC_SERVER_BUSY | The Responder cannot accept additional RPC traffic |
+| 0x3   | RPC_REQUEST_DROPPED | An RPC Call was discarded without a Reply     |
 
 --- back
 
