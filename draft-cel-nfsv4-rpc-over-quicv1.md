@@ -430,6 +430,11 @@ RPC_REQUEST_DROPPED
 : Signaled by a Responder that has discarded an RPC Call before
 generating an RPC Reply.
 
+RPC_UNSPECIFIED_ERROR
+: Signaled by a peer that is closing a stream or connection
+because of a condition to which no more specific error code
+applies.
+
 Additional code points are allocated through the registry
 described in {{sec-iana-errcodes}}.
 
@@ -677,6 +682,7 @@ Specification:
 | 0x1   | RPC_PROTOCOL_VIOLATION | A violation of this specification was detected |
 | 0x2   | RPC_SERVER_BUSY | The Responder cannot accept additional RPC traffic |
 | 0x3   | RPC_REQUEST_DROPPED | An RPC Call was discarded without a Reply     |
+| 0x4   | RPC_UNSPECIFIED_ERROR | No more specific error code applies         |
 
 --- back
 
