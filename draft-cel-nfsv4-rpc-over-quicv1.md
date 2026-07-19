@@ -726,5 +726,6 @@ that captures the question.
 * {{sec-streams}}: [#8](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/8) - Should each stream carry only one RPC program/version combination?
 * {{sec-framing}}: [#9](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/9) - Stream lifecycle: reconnection, resend semantics, and stream reuse
 * {{sec-framing}}: [#10](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/10) - Server backpressure mechanism for RPC-over-QUIC
+* {{sec-errcodes}}: [#13](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/13) - Should STOP_SENDING carry RPC-over-QUIC application error codes?
 * {{sec-netids}}: [#11](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/11) - Why register a netid per IP address family?
 * {{sec-alpn}}: [#12](https://github.com/chucklever/i-d-rpc-over-quicv1/issues/12) - Versioning of the RPC-over-QUIC ALPN identifier
