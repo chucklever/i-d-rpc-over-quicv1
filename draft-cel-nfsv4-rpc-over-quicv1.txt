@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                               Hammerspace
 Intended status: Standards Track                               S. Mayhew
-Expires: 16 November 2026                                        Red Hat
+Expires: 20 January 2027                                         Red Hat
                                                            C. Lever, Ed.
-                                                             15 May 2026
+                                                            19 July 2026
 
 
                Remote Procedure Call over QUIC Version 1
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 November 2026.
+   This Internet-Draft will expire on 20 January 2027.
 
 Copyright Notice
 
@@ -153,8 +153,8 @@ Table of Contents
 
    RPC is first and foremost a message-passing protocol.  This section
    covers the implementation details of exchanging RPC messages over
-   QUIC.  Readers should already be familiar with the fundamentals of
-   ONC RPC [RFC5531].
+   QUIC.  This section assumes familiarity with the fundamentals of ONC
+   RPC [RFC5531].
 
    RPC-over-QUIC relies on QUIC version 1 as the underlying transport
    [RFC9000].  The use of other QUIC transport versions with RPC MAY be
@@ -163,7 +163,7 @@ Table of Contents
 3.1.  Establishing a Connection
 
    When a network host wishes to send RPC requests to a remote service
-   via QUICv1, it must first find an established QUICv1 connection, or
+   via QUICv1, it first finds an established QUICv1 connection, or
    establish a new one.
 
    For the purpose of explanation, this document refers to the peer that
@@ -192,7 +192,7 @@ Table of Contents
 
 3.1.1.1.  Initial Flow Control Limits
 
-   These limits control the amount of data that each peer may send on a
+   These limits control the amount of data that each peer can send on a
    newly-created stream.  The limits are used for flow control and cap
    the amount of memory needed by both peers to keep data flowing on the
    connection.  The value of these limits are typically based on the
@@ -244,7 +244,7 @@ Table of Contents
 
 3.2.  RPC Service Discovery
 
-   For RPC, the destination port is special.  RPC services may use a
+   For RPC, the destination port is special.  RPC services can use a
    standardized destination port that is bound to an RPC program number.
    Such ports are assigned in the IANA Service Name and Transport
    Protocol Port Number registry [IANA].
@@ -310,7 +310,7 @@ Table of Contents
 
    QUICv1 provides a "stream" abstraction, described in Section 2 of
    [RFC9000].  A QUICv1 connection carries one or more streams.  Once a
-   QUICv1 connection has been established, either connection peer may
+   QUICv1 connection has been established, either connection peer can
    create a stream.  Typically, the RPC client peer creates the first
    stream on a connection.
 
@@ -340,10 +340,8 @@ Table of Contents
    Receivers MUST silently discard RPC messages whose direction field
    does not match their Requester or Responder role.  A receiver MAY
    also signal the violation to the peer by closing the offending stream
-   with a RESET_STREAM frame (Section 19.4 of [RFC9000]) carrying an
-   application error code; specific error code values and an extension
-   process for defining additional codes are left to a future revision
-   of this specification.
+   with a RESET_STREAM frame (Section 19.4 of [RFC9000]) carrying the
+   RPC_PROTOCOL_VIOLATION application error code (Section 3.5).
 
    Requesters and Responders match RPC Calls to RPC Replies using the
    XID carried in each RPC message.  Responders MUST send RPC Replies on
@@ -413,19 +411,35 @@ Table of Contents
    closing the affected stream or connection with a QUICv1 application
    error code, conveyed in a RESET_STREAM (Section 19.4 of [RFC9000]) or
    CONNECTION_CLOSE (Section 19.19 of [RFC9000]) frame.  RPC-over-QUIC
-   defines a set of named application error codes for this purpose;
-   numeric values are TBD.
+   defines the following application error codes for this purpose.
+   Their numeric values are recorded in the registry described in
+   Section 7.3.  Because those frames carry an application error code
+   whatever the reason for closing, codes are defined both for a close
+   under normal conditions and for a failure that no other code
+   describes.
 
-   PROTOCOL_VIOLATION  Signaled by a peer that has detected a violation
-      of this specification, such as an RPC message whose direction
-      field does not match the receiver's Requester or Responder role.
+   Application error codes occupy a separate space from the QUIC
+   transport error codes defined in Section 20.1 of [RFC9000].  The
+   names below carry an "RPC_" prefix to keep the two distinct when a
+   code appears in a packet trace or a diagnostic log.
 
-   SERVER_BUSY  Signaled by a Responder that is unable to accept
-      additional RPC traffic at this time.  Used as the backpressure
-      indication for RPC-over-QUIC.
+   RPC_NO_ERROR  Signaled by a peer that is closing a stream or
+      connection under normal conditions, with no error to report.
 
-   REQUEST_DROPPED  Signaled by a Responder that has discarded an RPC
-      Call before generating an RPC Reply.
+   RPC_PROTOCOL_VIOLATION  Signaled by a peer that has detected a
+      violation of this specification, such as an RPC message whose
+      direction field does not match the receiver's Requester or
+      Responder role.
+
+   RPC_SERVER_BUSY  Signaled by a Responder that is unable to accept
+      additional RPC traffic at this time.
+
+   RPC_REQUEST_DROPPED  Signaled by a Responder that has discarded an
+      RPC Call before generating an RPC Reply.
+
+   RPC_UNSPECIFIED_ERROR  Signaled by a peer that is closing a stream or
+      connection because of a condition to which no more specific error
+      code applies.
 
    Additional code points are allocated through the registry described
    in Section 7.3.
@@ -441,7 +455,7 @@ Table of Contents
    routing information in QUIC connection IDs, so that a load balancer
    can route packets to a particular backend server with minimal per-
    connection state, even when a client's network address changes due to
-   NAT rebinding or migration.  Because RPC-over-QUIC may carry multiple
+   NAT rebinding or migration.  Because RPC-over-QUIC can carry multiple
    streams over one connection (see Section 3.3), routing at the
    connection-ID layer keeps all streams of a given connection on the
    same backend.
@@ -457,7 +471,7 @@ Table of Contents
 
 4.  RPC Authentication Flavors
 
-   Streams in a QUIC connection may use different RPC authentication
+   Streams in a QUIC connection can use different RPC authentication
    flavors.  One stream might use RPC_AUTH_UNIX, while at the same time,
    another might use RPCSEC_GSS.
 
@@ -505,7 +519,7 @@ Table of Contents
    QUIC version 1, including always-on encryption, authentication, and
    integrity protection of QUIC packets, and the connection migration
    protections discussed in Section 21 of [RFC9000] and Section 9 of
-   [RFC9001].  Implementers should be familiar with that material.
+   [RFC9001].
 
    Because QUIC integrates TLS into the transport handshake, the peer
    identities established during connection establishment apply to every
@@ -542,18 +556,38 @@ Table of Contents
    transport protocol, appropriate message framing, and the format of
    service addresses and ports, among other things.
 
-   This document requests that IANA allocate the following "Netid"
-   registry strings in the "ONC RPC Netid" registry, as defined in
-   [RFC5665]:
+   This document requests that IANA allocate two netid strings in the
+   "ONC RPC Netids (Standards Action)" registry, as defined in
+   Section 5.1 of [RFC5665].  The fields of each registration are as
+   follows:
 
-         NC_QUIC    "quic"
-         NC_QUIC6   "quic6"
+     +=========+==========+=============+=========+=================+
+     | Netid   | Constant | RFC(s) and  | Point   | Cross Reference |
+     |         | Name     | Description | of      | to Uaddr Format |
+     |         |          | (if needed) | Contact | Registry        |
+     +=========+==========+=============+=========+=================+
+     | "quic"  | NC_QUIC  | (RFC-TBD),  | IESG    | 2               |
+     |         |          | [RFC9000],  |         |                 |
+     |         |          | [RFC0791]   |         |                 |
+     +---------+----------+-------------+---------+-----------------+
+     | "quic6" | NC_QUIC6 | (RFC-TBD),  | IESG    | 3               |
+     |         |          | [RFC9000],  |         |                 |
+     |         |          | [RFC8200]   |         |                 |
+     +---------+----------+-------------+---------+-----------------+
+
+                                 Table 1
 
    These netids MUST be used for any transport satisfying the
    requirements described in this document.  The "quic" netid is to be
    used when IPv4 addressing is employed by the underlying transport,
-   and "quic6" for IPv6 addressing.  IANA should use this document (RFC-
-   TBD) as the reference for the new entries.
+   and "quic6" for IPv6 addressing.
+
+   Because QUIC operates over UDP, the universal address format for both
+   netids is the format already registered for IPv4 and IPv6 transports
+   in Section 5.2.3.3 of [RFC5665] and Section 5.2.3.4 of [RFC5665].
+   This document therefore requests no new entry in the "ONC RPC Uaddr
+   Format Registry", and the cross reference values above are those of
+   the existing entries.
 
 7.2.  ALPN Identifier for SunRPC on QUIC
 
@@ -563,31 +597,113 @@ Table of Contents
       Identification Sequence:  0x73 0x75 0x6e 0x72 0x70 0x63 ("sunrpc")
 
    This document requests that a reference to (RFC-TBD) be added to the
-   SunRPC protocol entry in the "TLS Application-Layer Protocol
-   Negotiation (ALPN) Protocol IDs" registry.
+   existing SunRPC entry in the "TLS Application-Layer Protocol
+   Negotiation (ALPN) Protocol IDs" registry.  No other field of that
+   entry changes.  The complete entry after the requested update is:
+
+       +==========+=========================+============+=========+
+       | Protocol | Identification Sequence | Reference  | Comment |
+       +==========+=========================+============+=========+
+       | SunRPC   | 0x73 0x75 0x6e 0x72     | [RFC9289], |         |
+       |          | 0x70 0x63 ("sunrpc")    | (RFC-TBD)  |         |
+       +----------+-------------------------+------------+---------+
+
+                                  Table 2
 
 7.3.  RPC-over-QUIC Application Error Codes Registry
 
-   This document requests that IANA establish a new registry titled
-   "RPC-over-QUIC Application Error Codes".  The allocation policy for
-   this registry is to be specified by a future revision of this
-   document.
+   This document requests that IANA establish a new registry group
+   titled "RPC-over-QUIC Parameters", and within it a registry titled
+   "RPC-over-QUIC Application Error Codes".  No existing registry group
+   is a suitable home for this registry: the ONC RPC registry groups
+   predate QUIC, and application error codes are scoped to an ALPN
+   protocol identifier rather than to QUIC as a whole.  A new group also
+   accommodates further RPC-over-QUIC registries should later revisions
+   of this document require them.
 
-   Each registry entry comprises a numeric code point, a symbolic name,
-   and a reference to a stable specification defining the semantics of
-   the code.  Initial entries are:
+   The "RPC-over-QUIC Application Error Codes" registry governs a 62-bit
+   space, matching the width of a QUIC application error code
+   (Section 20.2 of [RFC9000]).  This space is divided into three
+   regions governed by different policies:
 
-                 +======+====================+===========+
-                 | Code | Name               | Reference |
-                 +======+====================+===========+
-                 | TBD  | PROTOCOL_VIOLATION | (RFC-TBD) |
-                 +------+--------------------+-----------+
-                 | TBD  | SERVER_BUSY        | (RFC-TBD) |
-                 +------+--------------------+-----------+
-                 | TBD  | REQUEST_DROPPED    | (RFC-TBD) |
-                 +------+--------------------+-----------+
+   *  Permanent registrations for values between 0x00 and 0x3f
+      (inclusive), which are assigned using Standards Action or IESG
+      Approval, as defined in Section 4.9 of [RFC8126] and Section 4.10
+      of [RFC8126].
 
-                                  Table 1
+   *  Permanent registrations for values larger than 0x3f, which are
+      assigned using the Specification Required policy [RFC8126].
+
+   *  Provisional registrations for values larger than 0x3f, which
+      require Expert Review, as defined in Section 4.5 of [RFC8126].
+
+   Provisional registrations share the range of values larger than 0x3f
+   with some permanent registrations.  This is by design, so that a
+   provisional registration can be converted to a permanent one without
+   requiring changes in deployed systems, following the principles set
+   out in Section 22 of [RFC9000].
+
+   This division mirrors the "DNS-over-QUIC Error Codes" registry
+   (Section 8.4 of [RFC9250]), which governs a comparable space for
+   another application protocol carried on QUIC.
+
+   Registrations in this registry MUST include the following fields:
+
+   Value:  The assigned code point.
+
+   Status:  "Permanent" or "Provisional".
+
+   Contact:  Contact details for the registrant.
+
+   In addition, permanent registrations MUST include:
+
+   Error:  A short mnemonic for the error code.
+
+   Specification:  A reference to a publicly available specification for
+      the value.
+
+   Description:  A brief description of the error code semantics, which
+      MAY be a summary if a specification reference is provided.
+
+   Provisional registrations are intended to allow private use of and
+   experimentation with extensions to RPC-over-QUIC.  Such registrations
+   can be reclaimed and reassigned for other purposes.  A provisional
+   registration need not supply a Specification field.  In addition to
+   the fields listed above, provisional registrations MUST include:
+
+   Date:  The date of the last update to the registration.
+
+   A request to update the date on a provisional registration can be
+   made without review by the designated expert or experts.
+
+   The initial content of this registry is shown below.  All initial
+   entries share the following fields:
+
+   Status:  Permanent
+
+   Contact:  NFSv4 Working Group
+
+   Specification:  Section 3.5 of (RFC-TBD)
+
+     +=======+========================+=============================+
+     | Value | Error                  | Description                 |
+     +=======+========================+=============================+
+     | 0x0   | RPC_NO_ERROR           | No error                    |
+     +-------+------------------------+-----------------------------+
+     | 0x1   | RPC_PROTOCOL_VIOLATION | A violation of this         |
+     |       |                        | specification was detected  |
+     +-------+------------------------+-----------------------------+
+     | 0x2   | RPC_SERVER_BUSY        | The Responder cannot accept |
+     |       |                        | additional RPC traffic      |
+     +-------+------------------------+-----------------------------+
+     | 0x3   | RPC_REQUEST_DROPPED    | An RPC Call was discarded   |
+     |       |                        | without a Reply             |
+     +-------+------------------------+-----------------------------+
+     | 0x4   | RPC_UNSPECIFIED_ERROR  | No more specific error code |
+     |       |                        | applies                     |
+     +-------+------------------------+-----------------------------+
+
+                                 Table 3
 
 8.  References
 
@@ -619,6 +735,11 @@ Table of Contents
               (RPC) Network Identifiers and Universal Address Formats",
               RFC 5665, DOI 10.17487/RFC5665, January 2010,
               <https://www.rfc-editor.org/rfc/rfc5665>.
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -652,8 +773,12 @@ Table of Contents
               load-balancers-21>.
 
    [RFC0768]  Postel, J., "User Datagram Protocol", STD 6, RFC 768,
-              DOI 10.17487/RFC0768, August 1980,
+              DOI 10.17487/RFC768, August 1980,
               <https://www.rfc-editor.org/rfc/rfc768>.
+
+   [RFC0791]  Postel, J., "Internet Protocol", STD 5, RFC 791,
+              DOI 10.17487/RFC791, September 1981,
+              <https://www.rfc-editor.org/rfc/rfc791>.
 
    [RFC5040]  Recio, R., Metzler, B., Culley, P., Hilland, J., and D.
               Garcia, "A Remote Direct Memory Access Protocol
@@ -670,10 +795,20 @@ Table of Contents
               1", RFC 8166, DOI 10.17487/RFC8166, June 2017,
               <https://www.rfc-editor.org/rfc/rfc8166>.
 
+   [RFC8200]  Deering, S. and R. Hinden, "Internet Protocol, Version 6
+              (IPv6) Specification", STD 86, RFC 8200,
+              DOI 10.17487/RFC8200, July 2017,
+              <https://www.rfc-editor.org/rfc/rfc8200>.
+
    [RFC8881]  Noveck, D., Ed. and C. Lever, "Network File System (NFS)
               Version 4 Minor Version 1 Protocol", RFC 8881,
               DOI 10.17487/RFC8881, August 2020,
               <https://www.rfc-editor.org/rfc/rfc8881>.
+
+   [RFC9250]  Huitema, C., Dickinson, S., and A. Mankin, "DNS over
+              Dedicated QUIC Connections", RFC 9250,
+              DOI 10.17487/RFC9250, May 2022,
+              <https://www.rfc-editor.org/rfc/rfc9250>.
 
    [RFC9293]  Eddy, W., Ed., "Transmission Control Protocol (TCP)",
               STD 7, RFC 9293, DOI 10.17487/RFC9293, August 2022,
@@ -717,6 +852,10 @@ Open Issues
    *  Section 3.4: #10 (https://github.com/chucklever/i-d-rpc-over-
       quicv1/issues/10) - Server backpressure mechanism for RPC-over-
       QUIC
+
+   *  Section 3.5: #13 (https://github.com/chucklever/i-d-rpc-over-
+      quicv1/issues/13) - Should STOP_SENDING carry RPC-over-QUIC
+      application error codes?
 
    *  Section 7.1: #11 (https://github.com/chucklever/i-d-rpc-over-
       quicv1/issues/11) - Why register a netid per IP address family?
