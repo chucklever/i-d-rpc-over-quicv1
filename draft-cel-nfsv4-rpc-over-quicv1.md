@@ -405,8 +405,9 @@ application error code, conveyed in a RESET_STREAM
 following application error codes for this purpose. Their numeric
 values are recorded in the registry described in
 {{sec-iana-errcodes}}. Because those frames carry an application
-error code even when a stream or connection is closed for an
-unremarkable reason, a code is defined for that case as well.
+error code whatever the reason for closing, codes are defined both
+for a close under normal conditions and for a failure that no other
+code describes.
 
 Application error codes occupy a separate space from the QUIC
 transport error codes defined in {{Section 20.1 of RFC9000}}. The
