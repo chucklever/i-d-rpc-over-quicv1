@@ -45,6 +45,8 @@ normative:
 
 informative:
   RFC0768:
+  RFC0791:
+  RFC8200:
   RFC9293:
   RFC5040:
   RFC7942:
@@ -534,20 +536,27 @@ These strings are an rpcbind {{RFC1833}} string naming the underlying
 transport protocol, appropriate message framing, and the format of
 service addresses and ports, among other things.
 
-This document requests that IANA allocate
-the following "Netid" registry strings in the "ONC RPC Netid"
-registry, as defined in {{RFC5665}}:
+This document requests that IANA allocate two netid strings in the
+"ONC RPC Netids (Standards Action)" registry, as defined in
+{{Section 5.1 of RFC5665}}. The fields of each registration are
+as follows:
 
-~~~
-      NC_QUIC    "quic"
-      NC_QUIC6   "quic6"
-~~~
+| Netid | Constant Name | RFC(s) and Description (if needed) | Point of Contact | Cross Reference to Uaddr Format Registry |
+|-------|---------------|------------------------------------|------------------|------------------------------------------|
+| "quic" | NC_QUIC | (RFC-TBD), {{RFC9000}}, {{RFC0791}} | IESG | 2 |
+| "quic6" | NC_QUIC6 | (RFC-TBD), {{RFC9000}}, {{RFC8200}} | IESG | 3 |
 
 These netids MUST be used for any transport satisfying the
 requirements described in this document. The "quic" netid is
 to be used when IPv4 addressing is employed by the underlying
-transport, and "quic6" for IPv6 addressing. IANA should use this
-document (RFC-TBD) as the reference for the new entries.
+transport, and "quic6" for IPv6 addressing.
+
+Because QUIC operates over UDP, the universal address format for
+both netids is the format already registered for IPv4 and IPv6
+transports in {{Section 5.2.3.3 of RFC5665}} and
+{{Section 5.2.3.4 of RFC5665}}. This document therefore requests
+no new entry in the "ONC RPC Uaddr Format Registry", and the
+cross reference values above are those of the existing entries.
 
 ## ALPN Identifier for SunRPC on QUIC  {#sec-alpn}
 
