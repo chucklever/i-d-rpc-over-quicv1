@@ -134,8 +134,8 @@ QUIC transports:
 
 RPC is first and foremost a message-passing protocol. This section
 covers the implementation details of exchanging RPC messages over
-QUIC. Readers should already be familiar with the fundamentals
-of ONC RPC {{RFC5531}}.
+QUIC. This section assumes familiarity with the fundamentals of
+ONC RPC {{RFC5531}}.
 
 RPC-over-QUIC relies on QUIC version 1 as the underlying transport
 {{RFC9000}}. The use of other QUIC transport versions with RPC MAY
@@ -511,8 +511,7 @@ RPC-over-QUIC inherits the transport-layer security properties of
 QUIC version 1, including always-on encryption, authentication,
 and integrity protection of QUIC packets, and the connection
 migration protections discussed in {{Section 21 of RFC9000}} and
-{{Section 9 of RFC9001}}. Implementers should be familiar with
-that material.
+{{Section 9 of RFC9001}}.
 
 Because QUIC integrates TLS into the transport handshake, the
 peer identities established during connection establishment apply
