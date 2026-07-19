@@ -415,9 +415,7 @@ a code appears in a packet trace or a diagnostic log.
 
 RPC_NO_ERROR
 : Signaled by a peer that is closing a stream or connection
-under normal conditions, with no error to report. A peer that
-closes a stream or connection for a reason this specification
-does not otherwise assign a code to MUST use RPC_NO_ERROR.
+under normal conditions, with no error to report.
 
 RPC_PROTOCOL_VIOLATION
 : Signaled by a peer that has detected a violation of this
