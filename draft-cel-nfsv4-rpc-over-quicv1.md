@@ -645,7 +645,6 @@ Error:
 
 Specification:
 : A reference to a publicly available specification for the value.
-Optional for provisional registrations.
 
 Description:
 : A brief description of the error code semantics, which MAY be a
@@ -653,7 +652,8 @@ summary if a specification reference is provided.
 
 Provisional registrations are intended to allow private use of and
 experimentation with extensions to RPC-over-QUIC. Such registrations
-can be reclaimed and reassigned for other purposes. In addition to
+can be reclaimed and reassigned for other purposes. A provisional
+registration need not supply a Specification field. In addition to
 the fields listed above, provisional registrations MUST include:
 
 Date:
