@@ -330,9 +330,8 @@ Receivers MUST silently discard RPC messages whose direction field
 does not match their Requester or Responder role. A receiver MAY
 also signal the violation to the peer by closing the offending
 stream with a RESET_STREAM frame ({{Section 19.4 of RFC9000}})
-carrying an application error code; specific error code values
-and an extension process for defining additional codes are left
-to a future revision of this specification.
+carrying the RPC_PROTOCOL_VIOLATION application error code
+({{sec-errcodes}}).
 
 Requesters and Responders match RPC Calls to RPC Replies using
 the XID carried in each RPC message. Responders MUST send RPC
