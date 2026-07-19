@@ -568,8 +568,13 @@ does, as defined in {{Section 7.2 of RFC9289}}:
 ~~~
 
 This document requests that a reference to (RFC-TBD) be added to
-the SunRPC protocol entry in the "TLS Application-Layer Protocol
-Negotiation (ALPN) Protocol IDs" registry.
+the existing SunRPC entry in the "TLS Application-Layer Protocol
+Negotiation (ALPN) Protocol IDs" registry. No other field of that
+entry changes. The complete entry after the requested update is:
+
+| Protocol | Identification Sequence | Reference | Comment |
+|----------|-------------------------|-----------|---------|
+| SunRPC | 0x73 0x75 0x6e 0x72 0x70 0x63 ("sunrpc") | {{RFC9289}}, (RFC-TBD) | |
 
 ## RPC-over-QUIC Application Error Codes Registry  {#sec-iana-errcodes}
 
