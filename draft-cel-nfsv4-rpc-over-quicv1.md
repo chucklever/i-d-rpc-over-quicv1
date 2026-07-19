@@ -144,7 +144,7 @@ be defined by future specifications.
 ## Establishing a Connection
 
 When a network host wishes to send RPC requests to a remote
-service via QUICv1, it must first find an established QUICv1
+service via QUICv1, it first finds an established QUICv1
 connection, or establish a new one.
 
 For the purpose of explanation, this document refers to the
@@ -174,7 +174,7 @@ parameters, as described in {{Section 7.4 of RFC9000}}.
 
 #### Initial Flow Control Limits
 
-These limits control the amount of data that each peer may send
+These limits control the amount of data that each peer can send
 on a newly-created stream. The limits are used for flow control
 and cap the amount of memory needed by both peers to keep data
 flowing on the connection. The value of these limits are typically
@@ -232,7 +232,7 @@ fragmentation.
 
 ## RPC Service Discovery
 
-For RPC, the destination port is special. RPC services may use
+For RPC, the destination port is special. RPC services can use
 a standardized destination port that is bound to an RPC program
 number. Such ports are assigned in the IANA Service Name and
 Transport Protocol Port Number registry {{IANA}}.
@@ -298,7 +298,7 @@ application RPC transactions to be executed.
 
 QUICv1 provides a "stream" abstraction, described in {{Section 2 of
 RFC9000}}. A QUICv1 connection carries one or more streams. Once a
-QUICv1 connection has been established, either connection peer may
+QUICv1 connection has been established, either connection peer can
 create a stream. Typically, the RPC client peer creates the first
 stream on a connection.
 
@@ -448,7 +448,7 @@ routing information in QUIC connection IDs, so that a load
 balancer can route packets to a particular backend server with
 minimal per-connection state, even when a client's network
 address changes due to NAT rebinding or migration. Because
-RPC-over-QUIC may carry multiple streams over one connection
+RPC-over-QUIC can carry multiple streams over one connection
 (see {{sec-streams}}), routing at the connection-ID layer keeps
 all streams of a given connection on the same backend.
 
@@ -463,7 +463,7 @@ beyond conformance to {{RFC9000}}.
 
 # RPC Authentication Flavors {#sec-auth}
 
-Streams in a QUIC connection may use different RPC authentication
+Streams in a QUIC connection can use different RPC authentication
 flavors. One stream might use RPC_AUTH_UNIX, while at the same time,
 another might use RPCSEC_GSS.
 
