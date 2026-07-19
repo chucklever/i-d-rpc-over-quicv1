@@ -35,6 +35,7 @@ normative:
   RFC5056:
   RFC5531:
   RFC5665:
+  RFC8126:
   RFC9000:
   RFC9001:
   RFC9266:
@@ -52,6 +53,7 @@ informative:
   RFC7942:
   RFC8166:
   RFC8881:
+  RFC9250:
   I-D.ietf-quic-load-balancers-21:
 
 --- abstract
@@ -400,9 +402,10 @@ Receivers signal certain stream- or connection-level conditions
 by closing the affected stream or connection with a QUICv1
 application error code, conveyed in a RESET_STREAM
 ({{Section 19.4 of RFC9000}}) or CONNECTION_CLOSE
-({{Section 19.19 of RFC9000}}) frame. RPC-over-QUIC defines a
-set of named application error codes for this purpose; numeric
-values are TBD.
+({{Section 19.19 of RFC9000}}) frame. RPC-over-QUIC defines the
+following application error codes for this purpose. Their numeric
+values are recorded in the registry described in
+{{sec-iana-errcodes}}.
 
 PROTOCOL_VIOLATION
 : Signaled by a peer that has detected a violation of this
@@ -578,20 +581,93 @@ entry changes. The complete entry after the requested update is:
 
 ## RPC-over-QUIC Application Error Codes Registry  {#sec-iana-errcodes}
 
-This document requests that IANA establish a new registry titled
-"RPC-over-QUIC Application Error Codes". The allocation policy
-for this registry is to be specified by a future revision of
-this document.
+This document requests that IANA establish a new registry group
+titled "RPC-over-QUIC Parameters", and within it a registry
+titled "RPC-over-QUIC Application Error Codes". No existing
+registry group is a suitable home for this registry: the ONC RPC
+registry groups predate QUIC, and application error codes are
+scoped to an ALPN protocol identifier rather than to QUIC as a
+whole. A new group also accommodates further RPC-over-QUIC
+registries should later revisions of this document require them.
 
-Each registry entry comprises a numeric code point, a symbolic
-name, and a reference to a stable specification defining the
-semantics of the code. Initial entries are:
+The "RPC-over-QUIC Application Error Codes" registry governs a
+62-bit space, matching the width of a QUIC application error code
+({{Section 20.2 of RFC9000}}). This space is divided into three
+regions governed by different policies:
 
-| Code | Name               | Reference |
-|------|--------------------|-----------|
-| TBD  | PROTOCOL_VIOLATION | (RFC-TBD) |
-| TBD  | SERVER_BUSY        | (RFC-TBD) |
-| TBD  | REQUEST_DROPPED    | (RFC-TBD) |
+* Permanent registrations for values between 0x00 and 0x3f
+  (inclusive), which are assigned using Standards Action or IESG
+  Approval, as defined in {{Section 4.9 of RFC8126}} and
+  {{Section 4.10 of RFC8126}}.
+
+* Permanent registrations for values larger than 0x3f, which are
+  assigned using the Specification Required policy {{RFC8126}}.
+
+* Provisional registrations for values larger than 0x3f, which
+  require Expert Review, as defined in {{Section 4.5 of RFC8126}}.
+
+Provisional registrations share the range of values larger than
+0x3f with some permanent registrations. This is by design, so
+that a provisional registration can be converted to a permanent
+one without requiring changes in deployed systems, following the
+principles set out in {{Section 22 of RFC9000}}.
+
+This division mirrors the "DNS-over-QUIC Error Codes" registry
+({{Section 8.4 of RFC9250}}), which governs a comparable space
+for another application protocol carried on QUIC.
+
+Registrations in this registry MUST include the following fields:
+
+Value:
+: The assigned code point.
+
+Status:
+: "Permanent" or "Provisional".
+
+Contact:
+: Contact details for the registrant.
+
+In addition, permanent registrations MUST include:
+
+Error:
+: A short mnemonic for the error code.
+
+Specification:
+: A reference to a publicly available specification for the value.
+Optional for provisional registrations.
+
+Description:
+: A brief description of the error code semantics, which MAY be a
+summary if a specification reference is provided.
+
+Provisional registrations are intended to allow private use of and
+experimentation with extensions to RPC-over-QUIC. Such registrations
+can be reclaimed and reassigned for other purposes. In addition to
+the fields listed above, provisional registrations MUST include:
+
+Date:
+: The date of the last update to the registration.
+
+A request to update the date on a provisional registration can be
+made without review by the designated expert or experts.
+
+The initial content of this registry is shown below. All initial
+entries share the following fields:
+
+Status:
+: Permanent
+
+Contact:
+: NFSv4 Working Group
+
+Specification:
+: {{sec-errcodes}} of (RFC-TBD)
+
+| Value | Error              | Description                                   |
+|-------|--------------------|-----------------------------------------------|
+| 0x1   | PROTOCOL_VIOLATION | A violation of this specification was detected |
+| 0x2   | SERVER_BUSY        | The Responder cannot accept additional RPC traffic |
+| 0x3   | REQUEST_DROPPED    | An RPC Call was discarded without a Reply     |
 
 --- back
 
