@@ -5,9 +5,9 @@
 Network File System Version 4                              B. Coddington
 Internet-Draft                                               Hammerspace
 Intended status: Standards Track                               S. Mayhew
-Expires: 20 January 2027                                         Red Hat
+Expires: 12 April 2027                                           Red Hat
                                                            C. Lever, Ed.
-                                                            19 July 2026
+                                                          9 October 2026
 
 
                Remote Procedure Call over QUIC Version 1
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 January 2027.
+   This Internet-Draft will expire on 12 April 2027.
 
 Copyright Notice
 
@@ -822,8 +822,8 @@ Acknowledgments
    for the creation of the QUIC transport protocol.
 
    The editor is grateful to Bill Baker, Greg Marsden, Richard
-   Scheffenegger, Martin Thomson, and Long Xin for their input and
-   support.
+   Scheffenegger, Tom Talpey, Martin Thomson, and Long Xin for their
+   input and support.
 
    Special thanks to Area Director Gorry Fairhurst, NFSV4 Working Group
    Chairs Brian Pawlowski and Christopher Inacio, and NFSV4 Working
