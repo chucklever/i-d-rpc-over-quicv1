@@ -700,6 +700,7 @@ The editor is grateful to
 Bill Baker,
 Greg Marsden,
 Richard Scheffenegger,
+Tom Talpey,
 Martin Thomson,
 and
 Long Xin
